@@ -1578,7 +1578,24 @@ async function doLogin() {
   clearLoginAttempts(username);
   if (data.status === 'pending')   { setS(data); showScreen('awaiting'); return; }
   if (data.status === 'suspended') { toast('Account suspended. Contact admin.', 'e'); return; }
-  setS({ ...data, activeShift: '' });
+
+  // Check if user is already on a team in the current shift — restore activeShift
+  let activeShift = '';
+  try {
+    const { data: shiftRow } = await sb.from('shift_info')
+      .select('shift, miner_team')
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .single();
+    if (shiftRow && shiftRow.miner_team) {
+      const firstName = data.first_name || '';
+      const teamNames = shiftRow.miner_team.split(/[,،\-–—\/]/).map(s => s.trim()).filter(Boolean);
+      const onTeam = teamNames.some(n => n.toLowerCase().includes(firstName.toLowerCase()));
+      if (onTeam) activeShift = shiftRow.shift || '';
+    }
+  } catch (e) { /* non-critical — leave activeShift blank */ }
+
+  setS({ ...data, activeShift });
   showScreen('app');
 }
 async function doRegister() {
