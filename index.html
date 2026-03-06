@@ -770,19 +770,10 @@ td.rmk{color:var(--text2);font-size:.74rem;max-width:180px;overflow:hidden;text-
           <div id="psu-status-cards" class="sg" style="margin-bottom:0"></div>
         </div>
 
-        <!-- Recent activities -->
-        <div class="card">
-          <div class="ch"><div class="ct">⚙️ Recent Activities</div><span style="font-size:.72rem;color:var(--text3)">Latest 20</span></div>
-          <div class="tw"><table>
-            <thead><tr><th>Type</th><th>IP</th><th>Diagnosis</th><th>Remarks / Action</th><th>Tech</th><th>Logged By</th><th>Date / Time</th></tr></thead>
-            <tbody id="d-act-tbody"></tbody>
-          </table></div>
-        </div>
-
         <!-- Miner Operational Breakdown -->
         <div class="card" style="margin-top:14px">
           <div class="ch">
-            <div class="ct">📊 Miner Operational Breakdown</div>
+            <div class="ct">Miner Operational Breakdown</div>
             <span id="mob-total" style="font-size:.78rem;color:var(--text2);font-family:var(--mono)"></span>
           </div>
           <div style="display:flex;gap:14px;font-size:.7rem;color:var(--text2);margin-bottom:10px;flex-wrap:wrap">
@@ -793,6 +784,15 @@ td.rmk{color:var(--text2);font-size:.74rem;max-width:180px;overflow:hidden;text-
           <div class="so-bars" id="mob-bars">
             <div style="color:var(--text3);font-size:.8rem;text-align:center;padding:20px">Loading…</div>
           </div>
+        </div>
+
+        <!-- Recent activities -->
+        <div class="card">
+          <div class="ch"><div class="ct">⚙️ Recent Activities</div><span style="font-size:.72rem;color:var(--text3)">Latest 20</span></div>
+          <div class="tw"><table>
+            <thead><tr><th>Type</th><th>IP</th><th>Diagnosis</th><th>Remarks / Action</th><th>Tech</th><th>Logged By</th><th>Date / Time</th></tr></thead>
+            <tbody id="d-act-tbody"></tbody>
+          </table></div>
         </div>
       </div>
 
@@ -1281,7 +1281,7 @@ td.rmk{color:var(--text2);font-size:.74rem;max-width:180px;overflow:hidden;text-
 <!-- Bulk Add Bitmain Miners -->
 <div id="modal-bulk-bt-miner" class="mo hidden"><div class="md md-lg">
   <div class="mt">＋ Bulk Add Bitmain Miners</div>
-  <div class="alert ai"><span class="a-icon">ℹ️</span><div class="a-text">One per line: <strong>SerialNumber, Model, Location, Status, Remarks</strong><br/><code style="color:var(--accent)">SN123456, Antminer S19 XP, Row A Rack 3, Onboarded, Installed Jan 2025</code><br/>Statuses: Onboarded · For Repair · Sent back to BM · Sent for Repair - MadZ</div></div>
+  <div class="alert ai"><span class="a-icon">ℹ️</span><div class="a-text">One per line, columns separated by a <strong>tab</strong> (paste directly from Excel): <strong>SerialNumber → Model → Location → Status → Remarks</strong><br/>Statuses: Onboarded · For Repair · Sent back to BM · Sent for Repair - MadZ</div></div>
   <div class="fg"><label class="fl">Paste Data</label><textarea class="bulk-area" id="bulk-bt-miner-text"></textarea></div>
   <div id="bulk-bt-miner-preview" style="margin-top:9px"></div>
   <div class="mf"><button class="btn bs" onclick="closeModal('modal-bulk-bt-miner')">Cancel</button><button class="btn bs" onclick="previewBulk('bt-miner')">Preview</button><button class="btn bp" onclick="commitBulk('bt-miner')">Add Miners</button></div>
@@ -1290,7 +1290,7 @@ td.rmk{color:var(--text2);font-size:.74rem;max-width:180px;overflow:hidden;text-
 <!-- Bulk Add Miners -->
 <div id="modal-bulk-miner" class="mo hidden"><div class="md md-lg">
   <div class="mt">＋ Bulk Add Miners</div>
-  <div class="alert ai"><span class="a-icon">ℹ️</span><div class="a-text">One per line: <strong>SerialNumber, Model, Location, Status, Remarks</strong><br/><code style="color:var(--accent)">SN123456, Antminer S19 XP, Row A Rack 3, Onboarded, Installed Jan 2025</code></div></div>
+  <div class="alert ai"><span class="a-icon">ℹ️</span><div class="a-text">One per line, columns separated by a <strong>tab</strong> (paste directly from Excel): <strong>SerialNumber → Model → Location → Status → Remarks</strong></div></div>
   <div class="fg"><label class="fl">Paste Data</label><textarea class="bulk-area" id="bulk-miner-text"></textarea></div>
   <div id="bulk-miner-preview" style="margin-top:9px"></div>
   <div class="mf"><button class="btn bs" onclick="closeModal('modal-bulk-miner')">Cancel</button><button class="btn bs" onclick="previewBulk('miner')">Preview</button><button class="btn bp" onclick="commitBulk('miner')">Add Miners</button></div>
@@ -1299,7 +1299,7 @@ td.rmk{color:var(--text2);font-size:.74rem;max-width:180px;overflow:hidden;text-
 <!-- Bulk Add PSUs -->
 <div id="modal-bulk-psu" class="mo hidden"><div class="md md-lg">
   <div class="mt">＋ Bulk Add PSUs</div>
-  <div class="alert ai"><span class="a-icon">ℹ️</span><div class="a-text">One per line: <strong>SerialNumber, Model, Type, Location, Status, Remarks</strong><br/><code style="color:var(--accent)">PSU001, Antminer, Antminer, Row B, Tested, New unit</code></div></div>
+  <div class="alert ai"><span class="a-icon">ℹ️</span><div class="a-text">One per line, columns separated by a <strong>tab</strong> (paste directly from Excel): <strong>SerialNumber → Model → Type → Location → Status → Remarks</strong></div></div>
   <div class="fg"><label class="fl">Paste Data</label><textarea class="bulk-area" id="bulk-psu-text"></textarea></div>
   <div id="bulk-psu-preview" style="margin-top:9px"></div>
   <div class="mf"><button class="btn bs" onclick="closeModal('modal-bulk-psu')">Cancel</button><button class="btn bs" onclick="previewBulk('psu')">Preview</button><button class="btn bp" onclick="commitBulk('psu')">Add PSUs</button></div>
@@ -3415,7 +3415,7 @@ async function commitImport(type) {
 // ══════════════════════════════════════════════
 function parseBulk(type, text) {
   return text.split('\n').filter(l=>l.trim()).map(l=>{
-    const p=l.split(',').map(x=>x.trim());
+    const p=l.split('\t').map(x=>x.trim());
     if (type==='miner')
       return {serial:p[0]||'',model:p[1]||'',location:p[2]||'',status:p[3]||'Onboarded',remarks:p[4]||''};
     if (type==='bt-miner')
