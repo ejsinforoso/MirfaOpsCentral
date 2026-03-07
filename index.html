@@ -1398,15 +1398,15 @@ td.rmk{color:var(--text2);font-size:.74rem;max-width:180px;overflow:hidden;text-
   <div style="display:flex;flex-direction:column;gap:12px;margin-top:18px">
     <div class="fg">
       <label class="fl">Container</label>
-      <input class="fi" id="remote-container" type="number" min="1" placeholder="e.g. 1"/>
+      <input class="fi" id="remote-container" type="number" min="1" max="50" placeholder="e.g. 1"/>
     </div>
     <div class="fg">
       <label class="fl">Tank</label>
-      <input class="fi" id="remote-tank" type="number" min="1" placeholder="e.g. 1"/>
+      <input class="fi" id="remote-tank" type="number" min="1" max="12" placeholder="e.g. 1"/>
     </div>
     <div class="fg" id="remote-pos-wrap" style="display:none">
       <label class="fl">Miner Position</label>
-      <input class="fi" id="remote-pos" type="number" min="1" placeholder="e.g. 5"/>
+      <input class="fi" id="remote-pos" type="number" min="1" max="16" placeholder="e.g. 5"/>
     </div>
   </div>
   <div style="margin-top:8px;padding:8px 10px;background:var(--surface2);border-radius:7px;font-size:.78rem;color:var(--text3);font-family:var(--mono)" id="remote-ip-preview">IP: —</div>
@@ -2475,6 +2475,9 @@ function submitRemote() {
   const p = el('remote-pos').value.trim();
   if (!c || !t) { toast('Enter Container and Tank.', 'e'); return; }
   if (_remoteMode === 'miner' && !p) { toast('Enter Miner Position.', 'e'); return; }
+  if (+c < 1 || +c > 50) { toast('Container must be between 1 and 50.', 'e'); return; }
+  if (+t < 1 || +t > 12) { toast('Tank must be between 1 and 12.', 'e'); return; }
+  if (_remoteMode === 'miner' && (+p < 1 || +p > 16)) { toast('Miner Position must be between 1 and 16.', 'e'); return; }
   const ip = _remoteMode === 'pdu' ? `10.${c}.${t}.20` : `10.${c}.${t}.${p}`;
   closeModal('modal-remote');
   window.open(`http://${ip}`, '_blank');
