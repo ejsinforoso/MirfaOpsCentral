@@ -5840,8 +5840,10 @@ async function initChat() {
     const msg = payload.new;
 
     // Skip own messages — already appended locally in sendChat()
+    const myName = (CU.first_name + ' ' + CU.last_name).trim();
     const isUUID = /^[0-9a-f-]{36}$/i.test(CU.id);
-    const isMe   = isUUID && msg.sender_id === CU.id;
+    const isMe   = (isUUID && msg.sender_id === CU.id) ||
+                   (!isUUID && msg.sender_name === myName);
     if (isMe) return;
 
     const box   = el('chat-messages');
