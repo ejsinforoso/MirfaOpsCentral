@@ -748,7 +748,16 @@ td.rmk{color:var(--text2);font-size:.74rem;max-width:180px;overflow:hidden;text-
           <div class="ch">
             <div class="ct">Miner Status Breakdown <span style="font-size:.72rem;color:var(--text3);font-weight:400;font-family:var(--mono);margin-left:6px">click any card to view miners</span></div>
           </div>
-          <div id="status-cards" class="sg" style="margin-bottom:0"></div>
+          <!-- Antminer miners -->
+          <div style="display:flex;justify-content:space-between;align-items:center;margin:4px 0 8px">
+            <span style="font-size:.86rem;font-weight:600;color:var(--text1);letter-spacing:.04em">Antminer</span>
+          </div>
+          <div id="status-cards-ant" class="sg" style="margin-bottom:14px"></div>
+          <!-- Avalon miners -->
+          <div style="display:flex;justify-content:space-between;align-items:center;margin:4px 0 8px">
+            <span style="font-size:.86rem;font-weight:600;color:var(--text1);letter-spacing:.04em">Avalon</span>
+          </div>
+          <div id="status-cards-ava" class="sg" style="margin-bottom:0"></div>
         </div>
 
         <!-- Status breakdown overview — PSUs -->
@@ -779,7 +788,16 @@ td.rmk{color:var(--text2);font-size:.74rem;max-width:180px;overflow:hidden;text-
           <div class="ch">
             <div class="ct">PSU Status Breakdown <span style="font-size:.72rem;color:var(--text3);font-weight:400;font-family:var(--mono);margin-left:6px">click any card to view PSUs</span></div>
           </div>
-          <div id="psu-status-cards" class="sg" style="margin-bottom:0"></div>
+          <!-- Antminer PSUs -->
+          <div style="display:flex;justify-content:space-between;align-items:center;margin:4px 0 8px">
+            <span style="font-size:.86rem;font-weight:600;color:var(--text1);letter-spacing:.04em">Antminer</span>
+          </div>
+          <div id="psu-status-cards-ant" class="sg" style="margin-bottom:14px"></div>
+          <!-- Avalon PSUs -->
+          <div style="display:flex;justify-content:space-between;align-items:center;margin:4px 0 8px">
+            <span style="font-size:.86rem;font-weight:600;color:var(--text1);letter-spacing:.04em">Avalon</span>
+          </div>
+          <div id="psu-status-cards-ava" class="sg" style="margin-bottom:0"></div>
         </div>
 
         <!-- Miner Operational Breakdown -->
@@ -2482,20 +2500,25 @@ async function renderDashSilent() {
   const { data: minerCountsRaw } = await sb.rpc('get_miner_status_counts');
   const { data: psuCountsRaw }   = await sb.rpc('get_psu_status_counts');
 
-  // Fall back to paginated fetch if RPC not available
+  // Always fetch model+status so we can split Onboarded by model
   let statusCounts = {}, totalMiners = 0;
-  if (minerCountsRaw) {
-    minerCountsRaw.forEach(r => { statusCounts[r.status] = r.count; totalMiners += Number(r.count); });
-  } else {
+  let onboardedXP = 0, onboardedAvalon = 0;
+  {
     let allMiners = [], from = 0;
     while (true) {
-      const { data } = await sb.from('miners').select('status').range(from, from + 999);
+      const { data } = await sb.from('miners').select('model,status').range(from, from + 999);
       if (!data || data.length === 0) break;
       allMiners = allMiners.concat(data);
       if (data.length < 1000) break;
       from += 1000;
     }
-    allMiners.forEach(m => { statusCounts[m.status] = (statusCounts[m.status] || 0) + 1; });
+    allMiners.forEach(m => {
+      statusCounts[m.status] = (statusCounts[m.status] || 0) + 1;
+      if (m.status === 'Onboarded') {
+        const isXP = (m.model || '').toLowerCase().includes('s19 xp');
+        if (isXP) onboardedXP++; else onboardedAvalon++;
+      }
+    });
     totalMiners = allMiners.length;
   }
 
@@ -2537,16 +2560,38 @@ async function renderDashSilent() {
   }).join('');
   set('so-bars', barsHtml || '<div style="color:var(--text3);font-size:.8rem;text-align:center;padding:20px">No miners in database yet.</div>');
 
-  // Update status cards — clickable
-  const cardsHtml = MINER_STATUSES.map(s => {
-    const count = statusCounts[s] || 0;
+  // Update status cards — split by Antminer / Avalon
+  const ANT_MINER_STATUSES = [
+    { status: 'Onboarded',            label: 'Onboarded'        },
+    { status: 'XP - For Consolidation', label: 'For Consolidation' },
+    { status: 'Spare',                  label: 'Spare'             },
+    { status: 'XP - Consolidated',      label: 'Consolidated'      },
+    { status: 'Repaired - Antminer',    label: 'Repaired'          },
+    { status: 'Under Repair - Masdar',  label: 'In Repair'         },
+    { status: 'XP - Bad Miner',         label: 'Bad Miner'         },
+    { status: 'XP - Unrepairable',      label: 'Unrepairables'     },
+  ];
+  const AVA_MINER_STATUSES = [
+    { status: 'Onboarded',           label: 'Onboarded'  },
+    { status: 'AVA - For Repair',    label: 'For Repair' },
+    { status: 'Repaired - Avalon',   label: 'Repaired'   },
+    { status: 'Under Repair - MadZ', label: 'In Repair'  },
+  ];
+  const makeCard = (s, lbl, count) => {
     const style = STATUS_STYLE[s] || { sc: 'sca' };
     return `<div class="sc ${style.sc} sc-click" onclick="openStatusDrill('miner','${s.replace(/'/g,"\\'")}',${count})" title="View ${count} miners">
-      <div class="sl">${s}</div><div class="sv">${count}</div>
+      <div class="sl">${lbl}</div><div class="sv">${count}</div>
       <div style="font-size:.65rem;color:var(--text3);font-family:var(--mono);margin-top:4px">click to view →</div>
     </div>`;
-  }).join('');
-  set('status-cards', cardsHtml);
+  };
+  set('status-cards-ant', ANT_MINER_STATUSES.map(({ status: s, label: lbl }) => {
+    const count = s === 'Onboarded' ? onboardedXP : (statusCounts[s] || 0);
+    return makeCard(s, lbl, count);
+  }).join(''));
+  set('status-cards-ava', AVA_MINER_STATUSES.map(({ status: s, label: lbl }) => {
+    const count = s === 'Onboarded' ? onboardedAvalon : (statusCounts[s] || 0);
+    return makeCard(s, lbl, count);
+  }).join(''));
 
   // ── PSU status overview — split by type ──────────────────────
   const ANT_STATUSES = ['Tested', 'For Testing', 'Faulty'];
@@ -2595,19 +2640,18 @@ async function renderDashSilent() {
   }).join('');
   set('so-psu-ava-bars', avaBarsHtml || '<div style="color:var(--text3);font-size:.8rem;text-align:center;padding:20px">No Avalon PSUs yet.</div>');
 
-  // PSU Status Breakdown cards — combined
+  // PSU Status Breakdown cards — split by type
   const psuCounts = {...antminerCounts, ...avalonCounts};
   const totalPSUs = totalAntminer + totalAvalon;
-  const ALL_PSU_STATUSES = [...ANT_STATUSES, ...AVA_STATUSES];
-  const psuCardsHtml = ALL_PSU_STATUSES.map(s => {
-    const count = psuCounts[s] || 0;
+  const makePsuCard = (s, count) => {
     const st = PSU_STYLE[s] || { sc: 'sca' };
     return `<div class="sc ${st.sc} sc-click" onclick="openStatusDrill('psu','${s}',${count})" title="View ${count} PSUs">
       <div class="sl">${s}</div><div class="sv">${count}</div>
       <div style="font-size:.65rem;color:var(--text3);font-family:var(--mono);margin-top:4px">click to view →</div>
     </div>`;
-  }).join('');
-  set('psu-status-cards', psuCardsHtml);
+  };
+  set('psu-status-cards-ant', ANT_STATUSES.map(s => makePsuCard(s, antminerCounts[s] || 0)).join(''));
+  set('psu-status-cards-ava', AVA_STATUSES.map(s => makePsuCard(s, avalonCounts[s] || 0)).join(''));
 
   // Update top summary stats
   if (isA) {
@@ -4327,9 +4371,17 @@ async function renderActivities() {
 
   const activeShift = CU.activeShift || CU.shift || '';
   const rows = actData || [];
+  // Pre-compute today's shift window for the canEdit check
+  const _csw = activeShift ? getShiftWindow(activeShift) : null;
   set('act-tbody', rows.length ? rows.map((r, i) => {
-    // Edit allowed: admin always; user only if activity belongs to their current active shift
-    const canEdit = isAdmin || (r.shift === activeShift && activeShift !== '');
+    // Edit allowed: admin always; operator only if activity belongs to their current active shift AND was created today (within that shift's window)
+    let canEdit = false;
+    if (isAdmin) {
+      canEdit = true;
+    } else if (activeShift && r.shift === activeShift && _csw && _csw.start && _csw.end) {
+      const actTime = new Date(r.created_at);
+      canEdit = actTime >= _csw.start && actTime <= _csw.end;
+    }
     const editBtn = canEdit
       ? `<button class="btn bs bsm" onclick="openEditActivity('${r.id}','${esc(r.shift)}','${r.logged_by_id||''}')">✏️</button>`
       : `<span title="You can only edit activities from your active shift" style="color:var(--text3);font-size:.75rem;padding:0 6px">—</span>`;
