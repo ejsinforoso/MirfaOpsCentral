@@ -622,6 +622,7 @@ td.rmk{color:var(--text2);font-size:.74rem;max-width:180px;overflow:hidden;text-
         </button>
         <div class="ni-children" id="nav-children3">
           <button class="ni-child" id="nav-logistics-home" onclick="go('logistics')"><span class="nico">🏠</span>Home</button>
+          <button class="ni-child" id="nav-logistics-guide" onclick="go('logistics-guide')"><span class="nico">📖</span>User Guide</button>
         </div>
       </div>
       <div class="ssec hidden" id="admin-nav">
@@ -1211,6 +1212,61 @@ td.rmk{color:var(--text2);font-size:.74rem;max-width:180px;overflow:hidden;text-
         </div>
       </div>
 
+      <!-- ══ LOGISTICS USER GUIDE ══ -->
+      <div id="page-logistics-guide" class="hidden">
+        <div class="ph">
+          <div class="pt">📖 Logistics — User Guide</div>
+          <div class="ps">How to use the Logistics section</div>
+        </div>
+
+        <!-- Guide nav tabs -->
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px">
+          <button class="btn bp bsm log-guide-tab-btn active" onclick="showLogGuideTab('record-movement')">📋 Record Material Movement</button>
+          <button class="btn bs bsm log-guide-tab-btn" onclick="showLogGuideTab('log-history')">📦 Logistics History</button>
+        </div>
+
+        <!-- ── Record Material Movement ── -->
+        <div class="log-guide-section" id="log-guide-record-movement">
+          <div class="card">
+            <div class="ch"><div class="ct">📋 Record Material Movement</div></div>
+            <div class="guide-body">
+              <p class="guide-intro">Use this to record any movement of equipment or materials between sites. Each submission generates a downloadable Material Gatepass PDF and logs the record in Logistics History.</p>
+
+              <div class="guide-step"><span class="guide-num">1</span><div><strong>Open the form</strong> — Click <span class="guide-tag">📋 Record Material Movement</span> on the Logistics Home page.</div></div>
+              <div class="guide-step"><span class="guide-num">2</span><div><strong>Site From / Site To</strong> — Enter where the materials are being moved from and where they are going. Example: <em>MIRFA DC → MADINAT ZAYED DC</em>.</div></div>
+              <div class="guide-step"><span class="guide-num">3</span><div><strong>Date</strong> — Defaults to today's date. Change it if needed.</div></div>
+              <div class="guide-step"><span class="guide-num">4</span><div><strong>Material Status</strong> — Select <span class="guide-tag">Outward</span> if materials are leaving the site, or <span class="guide-tag">Inward</span> if they are arriving.</div></div>
+              <div class="guide-step"><span class="guide-num">5</span><div><strong>Add Items</strong> — The form starts with 3 item rows. Fill in each item's Serial No., Description, Logs, Destination, and QTY. Click <span class="guide-tag">＋ Add Item</span> to add more rows as needed. Remove unused rows with the ✕ button.</div></div>
+              <div class="guide-step"><span class="guide-num">6</span><div><strong>ZT DC OPS Representative</strong> — Your name is pre-filled from your account. Designation is fixed as <em>Data Center Technician</em>. Enter your contact number.</div></div>
+              <div class="guide-step"><span class="guide-num">7</span><div><strong>Driver & Vehicle Details</strong> — Enter the driver's name, vehicle plate number, and contact number.</div></div>
+              <div class="guide-step"><span class="guide-num">8</span><div><strong>For Security Approval</strong> — Enter the security officer's name. Date is auto-set to today.</div></div>
+              <div class="guide-step"><span class="guide-num">9</span><div><strong>Submit & Download</strong> — Click <span class="guide-tag">✓ Submit &amp; Download PDF</span>. The pass is saved to the database and the Material Gatepass PDF is downloaded automatically to your device.</div></div>
+
+              <div class="guide-divider"></div>
+              <div class="guide-note">💡 <strong>Pass Numbering:</strong> Each pass is automatically assigned a unique number in the format <strong>MP-YYYYMMDD-NNN</strong> (e.g. MP-20260307-001). Numbers reset and increment per day.</div>
+              <div class="guide-note" style="margin-top:8px">⚠️ <strong>Important:</strong> Double-check all serial numbers and quantities before submitting. Once saved, the record cannot be deleted — only viewed and re-downloaded.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Logistics History ── -->
+        <div class="log-guide-section hidden" id="log-guide-log-history">
+          <div class="card">
+            <div class="ch"><div class="ct">📦 Logistics History</div></div>
+            <div class="guide-body">
+              <p class="guide-intro">A full log of all material movement passes recorded. Click any row to view the complete details of that pass.</p>
+
+              <div class="guide-step"><span class="guide-num">1</span><div><strong>View all passes</strong> — The Logistics History table shows every recorded pass with its pass number, date, direction, item summary, total count, destination, and who logged it.</div></div>
+              <div class="guide-step"><span class="guide-num">2</span><div><strong>View pass details</strong> — Click any row in the table to open the full detail view — all items, signatory information, and movement details for that pass.</div></div>
+              <div class="guide-step"><span class="guide-num">3</span><div><strong>Re-download PDF</strong> — Inside the pass detail view, click <span class="guide-tag">⬇ Re-download PDF</span> to regenerate and download the gatepass PDF for that pass at any time.</div></div>
+
+              <div class="guide-divider"></div>
+              <div class="guide-note">📋 <strong>Columns explained:</strong> <strong>Pass No.</strong> — unique ID for the pass. <strong>Direction</strong> — Inward (arriving) or Outward (leaving). <strong>Items</strong> — a summary of what was moved. <strong>Count</strong> — total quantity across all items.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div id="page-guide" class="hidden">
         <div class="ph">
           <div class="pt">📖 User Guide</div>
@@ -1225,6 +1281,7 @@ td.rmk{color:var(--text2);font-size:.74rem;max-width:180px;overflow:hidden;text-
           <button class="btn bs bsm guide-tab-btn" onclick="showGuideTab('equip-update')">🔧 Equipment Update</button>
           <button class="btn bs bsm guide-tab-btn" onclick="showGuideTab('serial-hist')">🔍 Serial History</button>
           <button class="btn bs bsm guide-tab-btn" onclick="showGuideTab('act-hist')">📋 Activities History</button>
+          <button class="btn bs bsm guide-tab-btn" onclick="showGuideTab('remote-actions')">🔌 Remote Actions</button>
         </div>
 
         <!-- ── Adding Activities ── -->
@@ -1386,11 +1443,36 @@ td.rmk{color:var(--text2);font-size:.74rem;max-width:180px;overflow:hidden;text-
           </div>
         </div>
 
-      </div>
+        <!-- ── Remote Actions ── -->
+        <div class="guide-section hidden" id="guide-remote-actions">
+          <div class="card">
+            <div class="ch"><div class="ct">🔌 Remote Actions</div></div>
+            <div class="guide-body">
+              <p class="guide-intro">Use Remote Actions to quickly open the web interface of a PDU or miner directly from the platform without manually typing IP addresses.</p>
 
+              <div class="guide-subtitle">Access PDU</div>
+              <div class="guide-step"><span class="guide-num">1</span><div><strong>Click <span class="guide-tag">🔌 Access PDU</span></strong> in the Remote Actions card on Submer Data Home.</div></div>
+              <div class="guide-step"><span class="guide-num">2</span><div><strong>Enter Container and Tank</strong> — Container: 1–50, Tank: 1–12.</div></div>
+              <div class="guide-step"><span class="guide-num">3</span><div><strong>IP Preview</strong> — The resolved IP address (<em>10.Container.Tank.20</em>) is shown live as you type. Confirm it looks correct before proceeding.</div></div>
+              <div class="guide-step"><span class="guide-num">4</span><div><strong>Click Go →</strong> — The PDU interface opens in a new browser tab.</div></div>
+
+              <div class="guide-divider"></div>
+
+              <div class="guide-subtitle">Access Miners</div>
+              <div class="guide-step"><span class="guide-num">1</span><div><strong>Click <span class="guide-tag">⛏️ Access Miners</span></strong> in the Remote Actions card on Submer Data Home.</div></div>
+              <div class="guide-step"><span class="guide-num">2</span><div><strong>Enter Container, Tank, and Miner Position</strong> — Container: 1–50, Tank: 1–12, Miner Position: 1–16.</div></div>
+              <div class="guide-step"><span class="guide-num">3</span><div><strong>IP Preview</strong> — The resolved IP address (<em>10.Container.Tank.MinerPosition</em>) updates live as you type.</div></div>
+              <div class="guide-step"><span class="guide-num">4</span><div><strong>Click Go →</strong> — The miner interface opens in a new browser tab.</div></div>
+
+              <div class="guide-note" style="margin-top:12px">💡 <strong>Tip:</strong> The IP preview updates in real time — always confirm the address before clicking Go to avoid opening the wrong device.</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div><!-- /page-guide -->
     </main>
-  </div>
-</div>
+  </div><!-- /app -->
 
 <!-- Pass Detail Modal -->
 <div id="modal-pass-detail" class="mo hidden"><div class="md md-lg" style="max-width:900px">
@@ -1589,7 +1671,7 @@ td.rmk{color:var(--text2);font-size:.74rem;max-width:180px;overflow:hidden;text-
   <div class="mt">🔑 Change My Password</div>
   <div id="self-chpw-body">
     <div class="alert ai" style="margin-bottom:14px"><span class="a-icon">ℹ️</span><div class="a-text">A password reset request will be sent to the admin for approval. Once approved, you'll be able to set a new password at the login screen.</div></div>
-    <div class="fg" style="margin-bottom:4px"><label class="fl">Your Username</label><input class="fi" id="self-chpw-username" placeholder="Confirm your username" /></div>
+    <div class="fg" style="margin-bottom:4px"><label class="fl">Your Username</label><input class="fi" id="self-chpw-username-static" placeholder="Confirm your username" /></div>
     <div class="mf"><button class="btn bs" onclick="closeModal('modal-self-chpw')">Cancel</button><button class="btn bp" onclick="submitSelfChpwRequest()">Send Reset Request</button></div>
   </div>
 </div></div>
@@ -1907,12 +1989,6 @@ applyTheme(_theme);
 // AUTH
 // ══════════════════════════════════════════════
 let selShift = '';
-function selPill(s) {
-  selShift = s;
-  ['morning','afternoon','night'].forEach(x => {
-    el('pill-' + x).className = 'spill' + (x === s ? ' sp-' + x[0] : '');
-  });
-}
 function switchTab(t) {
   // Show/hide tabs bar — hide for forgot/new-password flows
   const tabs = el('auth-tabs');
@@ -1945,9 +2021,8 @@ async function doLogin() {
   }
 
   const isHashed = data.password && data.password.startsWith('$2');
-  const valid = isHashed
-    ? await dcodeIO.bcrypt.compare(pass, data.password)
-    : data.password === pass;
+  if (!isHashed) { toast('Account credentials are not configured correctly. Contact admin.', 'e'); return; }
+  const valid = await dcodeIO.bcrypt.compare(pass, data.password);
   if (!valid) { recordFailedLogin(username); toast('Invalid username or password.', 'e'); return; }
   clearLoginAttempts(username);
   if (data.status === 'pending')   { setS(data); showScreen('awaiting'); return; }
@@ -2375,7 +2450,7 @@ async function submitCheckin() {
 // ══════════════════════════════════════════════
 // NAVIGATION
 // ══════════════════════════════════════════════
-const PAGES = ['homepage','home','bitmain-home','new','my','serial','activities','report','db','db-miners','db-bt-miners','db-psus','users','miner-form','psu-form','guide','logistics'];
+const PAGES = ['homepage','home','bitmain-home','new','my','serial','activities','report','db','db-miners','db-bt-miners','db-psus','users','miner-form','psu-form','guide','logistics','logistics-guide'];
 const CHILD_PAGES = ['activities','new','my','serial','report','guide'];
 function go(page, sub) {
   el('ndrop')?.classList.add('hidden');
@@ -2393,6 +2468,9 @@ function go(page, sub) {
   } else if (page === 'logistics') {
     el('nav-logistics')?.classList.add('active');
     el('nav-logistics-home')?.classList.add('active');
+  } else if (page === 'logistics-guide') {
+    el('nav-logistics')?.classList.add('active');
+    el('nav-logistics-guide')?.classList.add('active');
   } else if (page === 'miner-form' || page === 'psu-form') {
     // no nav highlight for form pages
   } else {
@@ -2426,6 +2504,15 @@ function showGuideTab(tab) {
   const sec = el('guide-' + tab);
   if (sec) sec.classList.remove('hidden');
   const btn = document.querySelector(`[onclick="showGuideTab('${tab}')"]`);
+  if (btn) btn.classList.add('active');
+}
+
+function showLogGuideTab(tab) {
+  document.querySelectorAll('.log-guide-section').forEach(s => s.classList.add('hidden'));
+  document.querySelectorAll('.log-guide-tab-btn').forEach(b => b.classList.remove('active'));
+  const sec = el('log-guide-' + tab);
+  if (sec) sec.classList.remove('hidden');
+  const btn = document.querySelector(`[onclick="showLogGuideTab('${tab}')"]`);
   if (btn) btn.classList.add('active');
 }
 
@@ -2534,18 +2621,6 @@ function addMpItem() {
     <input class="fi" id="mp-qty-${idx}"    placeholder="QTY" type="number" min="1" style="font-size:.78rem;padding:5px 8px"/>
     ${idx > 1 ? `<button onclick="el('mp-item-${idx}').remove()" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:1rem;padding:0">✕</button>` : '<span></span>'}`;
   el('mp-items-wrap').appendChild(row);
-}
-
-// Column header row above items
-function ensureMpHeader() {
-  if (!el('mp-items-header')) {
-    const hdr = document.createElement('div');
-    hdr.id = 'mp-items-header';
-    hdr.style.cssText = 'display:grid;grid-template-columns:40px 1fr 2fr 2fr 1fr 80px 36px;gap:6px;margin-bottom:2px';
-    hdr.innerHTML = ['#','Serial No.','Description','Logs','Destination','QTY','']
-      .map(t=>`<span style="font-size:.68rem;color:var(--text3);font-weight:600;font-family:var(--mono)">${t}</span>`).join('');
-    el('mp-items-wrap').before(hdr);
-  }
 }
 
 async function submitMaterialPass() {
@@ -2894,9 +2969,6 @@ function toggleNavDrop3(e) {
 // ══════════════════════════════════════════════
 // REPLACEMENT FORMS
 // ══════════════════════════════════════════════
-function selType(t) {} // legacy stub — no longer used
-function resetForm()  {} // legacy stub — no longer used
-
 let _rhPage = 0;
 const RH_PAGE_SIZE = 100;
 
