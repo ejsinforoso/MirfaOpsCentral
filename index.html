@@ -1754,7 +1754,7 @@ async function attachToTeam() {
 
   const { start, end } = getShiftWindow(shiftName);
   const { data: rows, error: fetchErr } = await sb.from('shift_info')
-    .select('id, miner_team')
+    .select('id, moc, miner_team')
     .eq('shift', shiftName)
     .gte('created_at', start.toISOString())
     .lte('created_at', end.toISOString())
@@ -1770,10 +1770,21 @@ async function attachToTeam() {
   const row         = rows[0];
   const rawTeam     = row.miner_team || '';
   const currentTeam = rawTeam.replace(/^[-–—\s]+$/, '').trim();
+  const mocName     = (row.moc || '').trim().toLowerCase();
 
-  if (currentTeam.toLowerCase().includes(myName.toLowerCase())) {
+  // Exact name match to avoid partial false positives
+  const teamNames = currentTeam.split(',').map(n => n.trim()).filter(Boolean);
+  const alreadyIn = teamNames.some(n => n.toLowerCase() === myName.toLowerCase());
+  if (alreadyIn) {
     hideLoading();
     toast('You are already in the Miner Team.', 'i');
+    return;
+  }
+
+  // Don't add if user is the MOC
+  if (mocName && myName.toLowerCase() === mocName) {
+    hideLoading();
+    toast('You are listed as MOC for this shift.', 'i');
     return;
   }
 
@@ -2637,7 +2648,16 @@ async function renderHomepage() {
 
       const staffItems = [
         { lbl: 'MOC',          val: ci.moc,          icon: '🎛️' },
-        { lbl: 'Miner Team',   val: ci.miner_team,   icon: '⛏️' },
+        { lbl: 'Miner Team',   val: (() => {
+            // Remove MOC name from miner_team display if it appears there
+            const moc = (ci.moc || '').trim().toLowerCase();
+            if (!moc || !ci.miner_team) return ci.miner_team;
+            const filtered = ci.miner_team.split(',')
+              .map(n => n.trim())
+              .filter(n => n.toLowerCase() !== moc)
+              .join(', ');
+            return filtered || ci.miner_team;
+          })(), icon: '⛏️' },
         { lbl: 'Network Team', val: ci.network_team, icon: '🌐' },
         { lbl: 'FM Team',      val: ci.fm_team,      icon: '🔧' },
       ];
