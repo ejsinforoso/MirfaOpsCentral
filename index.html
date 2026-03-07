@@ -2180,7 +2180,7 @@ async function subAllMiners() {
     await dbUpsertMiner({ serial:r.ns, location:r.loc, status:'Onboarded', remarks:r.rmk, updatedBy:op });
     await dbUpsertMiner({ serial:r.os, location:'', status:r.ost, remarks:'', updatedBy:op });
     await dbLog(r.ns, 'Replacement — New Unit', `Location: ${r.loc} | Status: Onboarded${r.rmk?' | Remarks: '+r.rmk:''}`, op);
-    await dbLog(r.os, 'Replacement — Removed',  `New Status: ${r.ost}`, op);
+    await dbLog(r.os, 'Replacement — Removed',  `New Status: ${r.ost}${r.rmk?' | Remarks: '+r.rmk:''}`, op);
     await sb.from('miner_replacements').insert({
       location:r.loc, new_serial:r.ns, new_status:'Onboarded',
       old_serial:r.os, old_status:r.ost, remarks:r.rmk,
@@ -2250,7 +2250,7 @@ async function subAllPSUs() {
     await dbUpsertPSU({ serial:r.ns, model:r.model, type:r.type, location:r.loc, status:'Tested', remarks:r.rmk, updatedBy:op });
     await dbUpsertPSU({ serial:r.os, model:r.model, type:r.type, location:'', status:r.ost, remarks:'', updatedBy:op });
     await dbLog(r.ns, 'Replacement — New PSU', `Model: ${r.model} | Type: ${r.type} | Location: ${r.loc} | Status: Tested`, op);
-    await dbLog(r.os, 'Replacement — Removed PSU', `Model: ${r.model} | New Status: ${r.ost}`, op);
+    await dbLog(r.os, 'Replacement — Removed PSU', `Model: ${r.model} | New Status: ${r.ost}${r.rmk?' | Remarks: '+r.rmk:''}`, op);
     await sb.from('psu_replacements').insert({
       model:r.model, type:r.type, location:r.loc, new_serial:r.ns, new_status:'Tested',
       old_serial:r.os, old_status:r.ost, remarks:r.rmk,
@@ -3104,7 +3104,7 @@ async function showSerialDetail(serial, type, rec) {
   });
   allRelP.forEach(r => {
     const role = r.new_serial === serial ? 'Installed (New PSU)' : 'Removed (Replaced)';
-    timeline.push({ ts: r.created_at, action: `PSU Replacement — ${role}`, detail: `Model: ${r.model} | Type: ${r.type||'—'} | ${r.new_serial===serial?'Status: '+r.new_status:'New Status: '+r.old_status}`, by: r.operator });
+    timeline.push({ ts: r.created_at, action: `PSU Replacement — ${role}`, detail: `Model: ${r.model} | Type: ${r.type||'—'} | ${r.new_serial===serial?'Status: '+r.new_status:'New Status: '+r.old_status}${r.remarks?' | Remarks: '+r.remarks:''}`, by: r.operator });
   });
   timeline.sort((a, b) => new Date(b.ts) - new Date(a.ts));
 
