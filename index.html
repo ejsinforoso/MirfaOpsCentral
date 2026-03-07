@@ -2133,7 +2133,7 @@ async function dbUpsertMiner(rec) {
     status: rec.status, remarks: rec.remarks || '',
     updated_by: rec.updatedBy, updated_at: now()
   }, { onConflict: 'serial' });
-  if (error) console.error('upsertMiner', error);
+  if (error) return; // silent — bulk import
 }
 async function dbUpsertPSU(rec) {
   const { error } = await sb.from('psus').upsert({
@@ -2141,7 +2141,7 @@ async function dbUpsertPSU(rec) {
     location: rec.location, status: rec.status, remarks: rec.remarks || '',
     updated_by: rec.updatedBy, updated_at: now()
   }, { onConflict: 'serial' });
-  if (error) console.error('upsertPSU', error);
+  if (error) return; // silent — bulk import
 }
 async function dbLog(serial, action, details, operator) {
   await sb.from('serial_log').insert({ serial, action, details, operator, created_at: now() });
@@ -2682,8 +2682,8 @@ async function submitCheckin() {
 
   hideLoading();
 
-  if (e1) { toast('Error saving Submer check-in: ' + e1.message, 'e'); console.error(e1); return; }
-  if (e2) { toast('Submer saved. Warning — Bitmain save failed: ' + e2.message, 'w'); console.warn(e2); }
+  if (e1) { toast('Error saving Submer check-in: ' + e1.message, 'e'); return; }
+  if (e2) { toast('Submer saved. Warning — Bitmain save failed: ' + e2.message, 'w'); }
   else    { toast(`✅ Checked in — ${shift}`, 's'); }
 
   setS({ ...CU, activeShift: shift });
@@ -3597,7 +3597,7 @@ async function renderDashSilent() {
   const { data: shiftRows, error: shiftErr } = await sb.from('shift_info')
     .select('*').order('created_at', { ascending: false }).limit(1);
   const latestShift = (shiftRows && shiftRows.length > 0) ? shiftRows[0] : null;
-  if (shiftErr) console.warn('shift_info fetch error:', shiftErr.message);
+  if (shiftErr) { /* non-critical — dashboard continues without shift data */ }
 
   const opsPanel  = el('ops-panel');
   const opsNoData = el('ops-no-data');
@@ -4518,7 +4518,7 @@ async function commitImport(type) {
   for (const r of records) seen.set(r.serial, r);
   const deduped = Array.from(seen.values());
   const dupes = records.length - deduped.length;
-  if (dupes > 0) console.warn(`Deduplicated ${dupes} duplicate serial(s) from import.`);
+  if (dupes > 0) { /* duplicates merged silently */ }
 
   const CHUNK = 50;
   const table = type==='miner' ? 'miners' : type==='bt-miner' ? 'bitmain_miners' : 'psus';
@@ -4530,7 +4530,6 @@ async function commitImport(type) {
     if (error) {
       errors += chunk.length;
       failedChunks.push({ start: i+1, end: i+chunk.length, msg: error.message });
-      console.warn(`Chunk ${i+1}-${i+chunk.length} error:`, error.message);
     } else {
       done += chunk.length;
     }
@@ -4545,8 +4544,8 @@ async function commitImport(type) {
 
   hideLoading();
   if (failedChunks.length) {
-    console.error('Failed chunks:', failedChunks);
-    toast(`⚠️ ${done} imported, ${errors} failed. Check browser console for details.`, 'w');
+    const detail = failedChunks.map(f => `Rows ${f.start}–${f.end}: ${f.msg}`).join(' | ');
+    toast(`⚠️ ${done} imported, ${errors} failed. ${detail}`, 'w');
   } else {
     toast(`✅ ${done} imported${skipped ? `, ${skipped} skipped (blank serial)` : ''}${dupes ? `, ${dupes} duplicates merged` : ''}.`, 's');
   }
@@ -4595,7 +4594,7 @@ async function commitBulk(type) {
   for (let i = 0; i < stamped.length; i += CHUNK) {
     const chunk = stamped.slice(i, i + CHUNK);
     const { error } = await sb.from(table).upsert(chunk, { onConflict: 'serial' });
-    if (error) { errors += chunk.length; console.warn('Bulk batch error:', error.message); }
+    if (error) { errors += chunk.length; } // chunk failed — count and continue
     else done += chunk.length;
     showLoading(`Adding… ${Math.min(i + CHUNK, stamped.length)} / ${stamped.length}`);
   }
@@ -5418,7 +5417,7 @@ async function submitActivities() {
   showLoading(`Saving ${inserts.length} activit${inserts.length > 1 ? 'ies' : 'y'}…`);
   const { error } = await sb.from('activities').insert(inserts);
   hideLoading();
-  if (error) { toast('Error saving activities: ' + error.message, 'e'); console.error(error); return; }
+  if (error) { toast('Error saving activities: ' + error.message, 'e'); return; }
 
   toast(`✅ ${inserts.length} activit${inserts.length > 1 ? 'ies' : 'y'} recorded.`, 's');
   closeModal('modal-activity');
