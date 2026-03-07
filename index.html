@@ -741,13 +741,12 @@ td.rmk{color:var(--text2);font-size:.74rem;max-width:180px;overflow:hidden;text-
           <span class="nico">🟡</span>Bitmain Data<span class="ni-arrow" id="nav-drop-arrow2">▼</span>
         </button>
         <div class="ni-children" id="nav-children2">
-          <button class="ni-child" id="nav-bitmain-home" onclick="go('bitmain-home')"><span class="nico">🏠</span>Home</button>
-          <button class="ni-child" disabled style="opacity:.45;cursor:default"><span class="nico">⚙️</span>Activities History</button>
-          <button class="ni-child" disabled style="opacity:.45;cursor:default"><span class="nico">🔄</span>Replacements</button>
+          <button class="ni-child" id="nav-bitmain-home"     onclick="go('bitmain-home')"><span class="nico">🏠</span>Home</button>
+          <button class="ni-child" id="nav-bt-activities"    onclick="go('bt-activities')"><span class="nico">⚙️</span>Activities History</button>
+          <button class="ni-child" id="nav-bt-rep"           onclick="go('bt-rep')"><span class="nico">🔄</span>Replacement History</button>
           <button class="ni-child" disabled style="opacity:.45;cursor:default"><span class="nico">🔧</span>Repair Tracker</button>
-          <button class="ni-child" disabled style="opacity:.45;cursor:default"><span class="nico">🔍</span>Serial Search</button>
+          <button class="ni-child" id="nav-bt-serial"       onclick="go('bt-serial')"><span class="nico">🔍</span>Serial Search</button>
           <button class="ni-child" disabled style="opacity:.45;cursor:default"><span class="nico">📊</span>Daily Report</button>
-          <button class="ni-child" disabled style="opacity:.45;cursor:default"><span class="nico">🚚</span>Delivery Tracker</button>
         </div>
 
         <!-- Logistics dropdown -->
@@ -847,9 +846,9 @@ td.rmk{color:var(--text2);font-size:.74rem;max-width:180px;overflow:hidden;text-
         <div class="card" style="margin-bottom:14px">
           <div class="ch"><div class="ct">⚡ Actions</div></div>
           <div style="display:flex;gap:9px;flex-wrap:wrap;padding:4px 0 6px">
-            <button class="btn bs" disabled style="opacity:.45;cursor:not-allowed" title="Coming soon">⚙️ &nbsp;Record Activity</button>
-            <button class="btn bs" disabled style="opacity:.45;cursor:not-allowed" title="Coming soon">⛏️ &nbsp;Replace Miner</button>
-            <button class="btn bs" disabled style="opacity:.45;cursor:not-allowed" title="Coming soon">🔧 &nbsp;Equipment Update</button>
+            <button class="btn bs" onclick="openBtActivityModal()">⚙️ &nbsp;Record Activity</button>
+            <button class="btn bs" onclick="go('bt-miner-form')">⛏️ &nbsp;Replace Miner</button>
+            <button class="btn bs" onclick="openBtEquipUpdate()">🔧 &nbsp;Equipment Update</button>
           </div>
         </div>
 
@@ -880,6 +879,84 @@ td.rmk{color:var(--text2);font-size:.74rem;max-width:180px;overflow:hidden;text-
           </div>
           <div class="so-bars" id="bt-hydro-bars" style="padding:4px 0 6px">
             <div style="color:var(--text3);font-size:.8rem;text-align:center;padding:20px">Loading…</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ BITMAIN ACTIVITIES HISTORY ══ -->
+      <div id="page-bt-activities" class="hidden">
+        <div class="ph"><div class="pt">🟡 Bitmain — Activities History</div><div class="ps">All logged Bitmain shift activities</div></div>
+        <div style="display:flex;gap:9px;margin-bottom:14px;flex-wrap:wrap;align-items:center">
+          <button class="btn bp bsm" onclick="openBtActivityModal()">＋ Record Activity</button>
+          <button class="btn bs bsm" onclick="exportBtActivities()">⬇ Export</button>
+        </div>
+        <div class="fbar">
+          <input class="fi" id="bt-act-s" placeholder="Search IP, issue, action…" oninput="_btActPage=0;renderBtActivities()"/>
+          <input class="fi" type="date" id="bt-act-date" onchange="_btActPage=0;renderBtActivities()" style="max-width:160px"/>
+          <span id="bt-act-filter-count" style="font-size:.78rem;font-weight:600;color:var(--accent);padding:5px 11px;background:var(--adim);border:1px solid rgba(0,184,217,.2);border-radius:var(--r);white-space:nowrap;display:none"></span>
+          <button class="btn bs bsm" onclick="_btActPage=0;el('bt-act-s').value='';el('bt-act-date').value='';renderBtActivities()">✕ Clear</button>
+        </div>
+        <div class="card">
+          <div class="tw"><table>
+            <thead><tr><th>#</th><th>IP</th><th>Issue</th><th>Action Taken</th><th>Remarks</th><th>Status</th><th>Operator</th><th>Shift</th><th>Date / Time</th><th id="bt-act-actions-th"></th></tr></thead>
+            <tbody id="bt-act-tbody"></tbody>
+          </table></div>
+          <div id="bt-act-pagination" style="display:none;align-items:center;justify-content:space-between;padding:10px 16px;border-top:1px solid var(--border);font-size:.76rem;color:var(--text2)">
+            <span id="bt-act-page-info"></span>
+            <div style="display:flex;gap:6px">
+              <button class="btn bs bsm" id="bt-act-prev" onclick="btActPage(-1)">← Prev</button>
+              <button class="btn bs bsm" id="bt-act-next" onclick="btActPage(1)">Next →</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ BITMAIN REPLACEMENT HISTORY ══ -->
+      <div id="page-bt-rep" class="hidden">
+        <div class="ph"><div class="pt">🟡 Bitmain — Replacement History</div><div class="ps">All Bitmain Miner Replacements</div></div>
+        <div class="fbar">
+          <input class="fi" id="bt-rep-s" placeholder="Search serial, IP, operator…" oninput="_btRepPage=0;renderBtRep()"/>
+          <input class="fi" type="date" id="bt-rep-date" onchange="_btRepPage=0;renderBtRep()" style="max-width:160px"/>
+          <button class="btn bs bsm" onclick="_btRepPage=0;el('bt-rep-s').value='';el('bt-rep-date').value='';renderBtRep()">✕ Clear</button>
+        </div>
+        <div class="card">
+          <div class="tw"><table>
+            <thead><tr><th>#</th><th>IP</th><th>New Serial</th><th>Old Serial</th><th>Old Status</th><th>Remarks</th><th>Operator</th><th>Shift</th><th>Date / Time</th></tr></thead>
+            <tbody id="bt-rep-tbody"></tbody>
+          </table></div>
+          <div id="bt-rep-pagination" style="display:none;align-items:center;justify-content:space-between;padding:10px 16px;border-top:1px solid var(--border);font-size:.76rem;color:var(--text2)">
+            <span id="bt-rep-page-info"></span>
+            <div style="display:flex;gap:6px">
+              <button class="btn bs bsm" id="bt-rep-prev" onclick="btRepPage(-1)">← Prev</button>
+              <button class="btn bs bsm" id="bt-rep-next" onclick="btRepPage(1)">Next →</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ BITMAIN SERIAL SEARCH ══ -->
+      <div id="page-bt-serial" class="hidden">
+        <div class="ph"><div class="pt">🔍 Bitmain — Serial Search</div><div class="ps">Search by full or partial serial number — Bitmain Miners</div></div>
+        <div style="display:flex;gap:9px;margin-bottom:18px;flex-wrap:wrap;align-items:center">
+          <input class="fi" id="bt-sl-input" placeholder="Enter full or partial serial…" style="max-width:320px" onkeydown="if(event.key==='Enter')doBtSerialLookup()"/>
+          <button class="btn bp" onclick="doBtSerialLookup()">🔍 Search</button>
+          <button class="btn bs" onclick="set('bt-sl-results','');el('bt-sl-input').value=''">✕ Clear</button>
+        </div>
+        <div id="bt-sl-results"></div>
+      </div>
+
+      <!-- ══ BITMAIN MINER REPLACEMENT FORM ══ -->
+      <div id="page-bt-miner-form" class="hidden">
+        <div class="ph">
+          <div class="pt">🟡 Bitmain — Replace Miner</div>
+          <div class="ps">Record miner replacements and update Bitmain Miners DB</div>
+        </div>
+        <div class="card">
+          <div id="bt-miner-rows-wrap" style="display:flex;flex-direction:column;gap:10px;margin-bottom:12px"></div>
+          <button class="btn bs bsm" onclick="addBtMinerRow()" style="margin-bottom:16px">＋ Add Another Replacement</button>
+          <div style="display:flex;gap:9px;flex-wrap:wrap">
+            <button class="btn bs" onclick="go('bitmain-home')">Cancel</button>
+            <button class="btn bp" onclick="submitBtMiners()">✓ Submit All Replacements</button>
           </div>
         </div>
       </div>
@@ -1857,17 +1934,78 @@ td.rmk{color:var(--text2);font-size:.74rem;max-width:180px;overflow:hidden;text-
 <!-- Record Activity -->
 <div id="modal-activity" class="mo hidden"><div class="md md-lg" style="max-width:780px">
   <div class="mt">⚙️ Record Activity</div>
-
-  <!-- Batch list of activity rows -->
   <div id="act-rows-wrap" style="display:flex;flex-direction:column;gap:10px;margin-bottom:12px"></div>
-
-  <!-- Add row button -->
   <button class="btn bs bsm" onclick="addActivityRow()" style="width:100%;margin-bottom:14px;border-style:dashed">＋ Add Another Activity</button>
-
   <div class="mf">
     <button class="btn bs" onclick="closeModal('modal-activity')">Cancel</button>
     <button class="btn bp" onclick="submitActivities()">✓ Save All Activities</button>
   </div>
+</div></div>
+
+<!-- Bitmain Record Activity -->
+<div id="modal-bt-activity" class="mo hidden"><div class="md md-lg" style="max-width:780px">
+  <div class="mt">🟡 Record Bitmain Activity</div>
+  <div id="bt-act-rows-wrap" style="display:flex;flex-direction:column;gap:10px;margin-bottom:12px"></div>
+  <button class="btn bs bsm" onclick="addBtActivityRow()" style="width:100%;margin-bottom:14px;border-style:dashed">＋ Add Another Activity</button>
+  <div class="mf">
+    <button class="btn bs" onclick="closeModal('modal-bt-activity')">Cancel</button>
+    <button class="btn bp" onclick="submitBtActivities()">✓ Save All Activities</button>
+  </div>
+</div></div>
+
+<!-- Bitmain Edit Activity -->
+<div id="modal-bt-edit-activity" class="mo hidden"><div class="md">
+  <div class="mt">✏️ Edit Bitmain Activity</div>
+  <input type="hidden" id="bt-ea-id"/>
+  <input type="hidden" id="bt-ea-shift"/>
+  <input type="hidden" id="bt-ea-created"/>
+  <div class="fgrid">
+    <div class="fg"><label class="fl">IP</label><input class="fi" id="bt-ea-ip" placeholder="e.g. 192.168.10.100"/></div>
+    <div class="fg">
+      <label class="fl">Status</label>
+      <select class="fs" id="bt-ea-status">
+        <option value="">— No Status —</option>
+        <option value="WIP">WIP</option>
+        <option value="PENDING">PENDING</option>
+        <option value="UNDER OBSERVATION">UNDER OBSERVATION</option>
+        <option value="DONE">DONE</option>
+      </select>
+    </div>
+    <div class="fg"><label class="fl">Issue</label><input class="fi" id="bt-ea-issue" placeholder="What was found…"/></div>
+    <div class="fg"><label class="fl">Action Taken</label><input class="fi" id="bt-ea-action" placeholder="What was done…"/></div>
+    <div class="fg" style="grid-column:1/-1"><label class="fl">Remarks</label><input class="fi" id="bt-ea-rmk" placeholder="Additional notes…"/></div>
+  </div>
+  <div class="mf">
+    <button class="btn bs" onclick="closeModal('modal-bt-edit-activity')">Cancel</button>
+    <button class="btn bp" onclick="saveBtEditActivity()">Save Changes</button>
+  </div>
+</div></div>
+
+<!-- Bitmain Activity History -->
+<div id="modal-bt-act-history" class="mo hidden"><div class="md md-lg">
+  <div class="mt">ℹ️ Activity History <span id="bt-ah-ip-label" style="color:var(--text3);font-weight:400;font-size:.85rem"></span></div>
+  <div id="bt-ah-body" style="min-height:60px">
+    <div style="color:var(--text3);font-size:.82rem;text-align:center;padding:24px">Loading…</div>
+  </div>
+  <div class="mf"><button class="btn bs" onclick="closeModal('modal-bt-act-history')">Close</button></div>
+</div></div>
+
+<!-- Bitmain Equipment Update -->
+<div id="modal-bt-equip" class="mo hidden"><div class="md md-lg" style="max-width:760px">
+  <div class="mt">🔧 Bitmain Equipment Update</div>
+  <div id="bt-eu-rows-wrap" style="display:flex;flex-direction:column;gap:10px;margin-bottom:12px"></div>
+  <button class="btn bs bsm" onclick="addBtEuRow()" style="width:100%;margin-bottom:14px;border-style:dashed">＋ Add Another Update</button>
+  <div class="mf">
+    <button class="btn bs" onclick="closeModal('modal-bt-equip')">Cancel</button>
+    <button class="btn bp" onclick="submitBtEquipUpdates()">✓ Submit All Updates</button>
+  </div>
+</div></div>
+
+<!-- Bitmain Serial History -->
+<div id="modal-bt-serial-hist" class="mo hidden"><div class="md md-lg" style="max-width:640px">
+  <div class="mt">🟡 Serial History <span id="bt-sh-serial-label" style="color:var(--accent);font-family:var(--mono);font-size:.9rem"></span></div>
+  <div id="bt-sh-body" style="padding:4px 0"></div>
+  <div class="mf"><button class="btn bs" onclick="closeModal('modal-bt-serial-hist')">Close</button></div>
 </div></div>
 
 <!-- Edit Activity (Admin only) -->
@@ -2561,7 +2699,7 @@ async function submitCheckin() {
 // ══════════════════════════════════════════════
 // NAVIGATION
 // ══════════════════════════════════════════════
-const PAGES = ['homepage','home','bitmain-home','new','serial','activities','report','db','db-miners','db-bt-miners','db-psus','users','miner-form','psu-form','guide','logistics','logistics-guide'];
+const PAGES = ['homepage','home','bitmain-home','bt-activities','bt-rep','bt-serial','bt-miner-form','new','serial','activities','report','db','db-miners','db-bt-miners','db-psus','users','miner-form','psu-form','guide','logistics','logistics-guide'];
 const CHILD_PAGES = ['activities','new','serial','report','guide'];
 function go(page, sub) {
   el('ndrop')?.classList.add('hidden');
@@ -2576,6 +2714,9 @@ function go(page, sub) {
   } else if (page === 'bitmain-home') {
     el('nav-bitmain')?.classList.add('active');
     el('nav-bitmain-home')?.classList.add('active');
+  } else if (page === 'bt-activities' || page === 'bt-rep' || page === 'bt-serial' || page === 'bt-miner-form') {
+    el('nav-bitmain')?.classList.add('active');
+    el('nav-'+page)?.classList.add('active');
   } else if (page === 'logistics') {
     el('nav-logistics')?.classList.add('active');
     el('nav-logistics-home')?.classList.add('active');
@@ -2595,7 +2736,11 @@ function go(page, sub) {
   if (page==='homepage')      renderHomepage();
   if (page==='home')          renderDash();
   if (page==='bitmain-home')  { const sh = CU.activeShift || CU.shift || ''; set('bt-dsub', 'Welcome back, ' + CU.first_name + (sh ? ' · ' + sh : '')); renderBtHomeFleet(); renderBtHydroBreakdown(); startBtDashAutoRefresh(); }
+  if (page==='bt-activities') { _btActPage=0; renderBtActivities(); }
+  if (page==='bt-rep')        { _btRepPage=0; renderBtRep(); }
+  if (page==='bt-miner-form') { _btMinerRowCount=0; el('bt-miner-rows-wrap').innerHTML=''; addBtMinerRow(); }
   if (page==='new')         renderRepHistory();
+  if (page==='bt-serial')   { set('bt-sl-results',''); el('bt-sl-input').value=''; }
   if (page==='serial')      { set('sl-results',''); el('sl-input').value=''; }
   if (page==='activities')  renderActivities();
   if (page==='report')      renderReport();
@@ -5746,6 +5891,717 @@ async function exportReport() {
 }
 
 // ══════════════════════════════════════════════
+// BITMAIN ACTIVITIES
+// ══════════════════════════════════════════════
+let _btActPage  = 0;
+let _btActRowCount = 0;
+const BT_ACT_PAGE_SIZE = 30;
+
+async function openBtActivityModal() {
+  _btActRowCount = 0;
+  el('bt-act-rows-wrap').innerHTML = '';
+  addBtActivityRow();
+  openModal('modal-bt-activity');
+}
+
+function addBtActivityRow() {
+  _btActRowCount++;
+  const idx = _btActRowCount;
+  const row = document.createElement('div');
+  row.className = 'act-row';
+  row.id = `bt-act-row-${idx}`;
+  row.innerHTML = `
+    <div class="act-row-num">Activity #${idx}</div>
+    ${idx > 1 ? `<button class="act-row-remove" onclick="el('bt-act-row-${idx}').remove()" title="Remove">✕</button>` : ''}
+    <div class="act-row-grid">
+      <div class="fg">
+        <label class="fl">IP</label>
+        <input class="fi" id="bt-act-ip-${idx}" placeholder="e.g. 192.168.10.100"/>
+      </div>
+      <div class="fg">
+        <label class="fl">Issue</label>
+        <input class="fi" id="bt-act-issue-${idx}" placeholder="What was found / the problem…"/>
+      </div>
+      <div class="fg">
+        <label class="fl">Action Taken</label>
+        <input class="fi" id="bt-act-action-${idx}" placeholder="What was done to resolve it…"/>
+      </div>
+      <div class="fg">
+        <label class="fl">Remarks</label>
+        <input class="fi" id="bt-act-rmk-${idx}" placeholder="Additional notes…"/>
+      </div>
+    </div>`;
+  el('bt-act-rows-wrap').appendChild(row);
+}
+
+async function submitBtActivities() {
+  const rows = el('bt-act-rows-wrap').querySelectorAll('.act-row');
+  if (!rows.length) { toast('No activities to save.', 'e'); return; }
+  const op = CU.first_name + ' ' + CU.last_name;
+  const sh = CU.activeShift || CU.shift || '';
+
+  const inserts = [];
+  let hasError = false;
+  rows.forEach(row => {
+    const idx    = row.id.replace('bt-act-row-', '');
+    const ip     = el(`bt-act-ip-${idx}`)?.value?.trim() || '';
+    const issue  = el(`bt-act-issue-${idx}`)?.value?.trim() || '';
+    const action = el(`bt-act-action-${idx}`)?.value?.trim() || '';
+    const rmk    = el(`bt-act-rmk-${idx}`)?.value?.trim() || '';
+    if (!ip && !issue) { toast(`Activity #${idx}: please fill in at least IP or Issue.`, 'e'); hasError = true; return; }
+    inserts.push({ ip, issue, action_taken: action, remarks: rmk, operator: op, operator_id: /^[0-9a-f-]{36}$/i.test(CU.id) ? CU.id : null, shift: sh, created_at: now() });
+  });
+  if (hasError) return;
+
+  showLoading(`Saving ${inserts.length} activit${inserts.length > 1 ? 'ies' : 'y'}…`);
+  const { error } = await sb.from('bitmain_activities').insert(inserts);
+  hideLoading();
+  if (error) { toast('Error saving: ' + error.message, 'e'); return; }
+
+  toast(`✅ ${inserts.length} activit${inserts.length > 1 ? 'ies' : 'y'} recorded.`, 's');
+  closeModal('modal-bt-activity');
+  if (!el('page-bt-activities').classList.contains('hidden')) renderBtActivities();
+}
+
+function btActPage(dir) { _btActPage += dir; renderBtActivities(); }
+
+async function renderBtActivities() {
+  const search = (el('bt-act-s')?.value || '').trim();
+  const date   = el('bt-act-date')?.value || '';
+  set('bt-act-tbody', `<tr class="erow"><td colspan="8"><span>⏳</span>Loading…</td></tr>`);
+
+  let q = sb.from('bitmain_activities')
+    .select('*', { count: 'exact' })
+    .order('created_at', { ascending: false });
+
+  if (date) { q = q.gte('created_at', date + 'T00:00:00').lte('created_at', date + 'T23:59:59'); }
+  if (search) { q = q.or(`ip.ilike.%${search}%,issue.ilike.%${search}%,action_taken.ilike.%${search}%,operator.ilike.%${search}%,remarks.ilike.%${search}%`); }
+
+  const from = _btActPage * BT_ACT_PAGE_SIZE;
+  const { data, count, error } = await q.range(from, from + BT_ACT_PAGE_SIZE - 1);
+  const total = count || 0;
+  const totalPages = Math.ceil(total / BT_ACT_PAGE_SIZE);
+
+  // Filter count badge
+  const fc = el('bt-act-filter-count');
+  if (fc) {
+    if (search || date) { fc.style.display = ''; fc.textContent = `${total} result${total !== 1 ? 's' : ''}`; }
+    else fc.style.display = 'none';
+  }
+
+  // Pagination
+  const pg = el('bt-act-pagination');
+  if (pg) {
+    pg.style.display = total > BT_ACT_PAGE_SIZE ? 'flex' : 'none';
+    set('bt-act-page-info', `Page ${_btActPage + 1} of ${totalPages} · ${total} total`);
+    el('bt-act-prev').disabled = _btActPage === 0;
+    el('bt-act-next').disabled = _btActPage >= totalPages - 1;
+  }
+
+  if (error) { set('bt-act-tbody', `<tr class="erow"><td colspan="8">Error loading.</td></tr>`); return; }
+
+  const rows = data || [];
+  const activeShift = CU.activeShift || CU.shift || '';
+  const _csw = activeShift ? getShiftWindow(activeShift) : null;
+  const isAdmin = CU.role === 'admin';
+
+  // Set actions column header
+  const ath = el('bt-act-actions-th');
+  if (ath) ath.textContent = 'Actions';
+
+  set('bt-act-tbody', rows.length ? rows.map((r, i) => {
+    // Edit allowed: only if activity belongs to user's active shift AND was created today within that window
+    let canEdit = false;
+    if (isAdmin) {
+      canEdit = true;
+    } else if (activeShift && r.shift === activeShift && _csw?.start && _csw?.end) {
+      const actTime = new Date(r.created_at);
+      canEdit = actTime >= _csw.start && actTime <= _csw.end;
+    }
+    const editBtn = canEdit
+      ? `<button class="btn bs bsm" onclick="openBtEditActivity('${r.id}')">✏️</button>`
+      : `<span title="Only editable within your active shift today" style="color:var(--text3);font-size:.75rem;padding:0 6px">—</span>`;
+    const histBtn = `<button class="btn-hist" title="View history" onclick="openBtActHistory('${r.id}','${esc(r.ip)||''}')">ℹ️</button>`;
+    return `<tr>
+      <td style="color:var(--text3)">${from + i + 1}</td>
+      <td style="font-family:var(--mono);font-size:.76rem">${esc(r.ip)||'—'}</td>
+      <td class="hi" style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(r.issue)}">${esc(r.issue)||'—'}</td>
+      <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(r.action_taken)}">${esc(r.action_taken)||'—'}</td>
+      <td style="max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(r.remarks)}">${esc(r.remarks)||'—'}</td>
+      <td>${r.status ? actStatusBadge(r.status) : '<span style="color:var(--text3);font-size:.72rem">—</span>'}</td>
+      <td class="hi">${esc(r.operator)||'—'}</td>
+      <td>${r.shift ? shBadge(r.shift) : '—'}</td>
+      <td style="color:var(--text2)">${fmt(r.created_at)}</td>
+      <td style="display:flex;gap:4px;align-items:center">${editBtn}${histBtn}</td>
+    </tr>`;
+  }).join('') :
+    `<tr class="erow"><td colspan="10"><span>⚙️</span>No activities yet.</td></tr>`);
+}
+
+async function exportBtActivities() {
+  showLoading('Preparing export…');
+  const { data } = await sb.from('bitmain_activities').select('*').order('created_at', { ascending: false });
+  hideLoading();
+  const rows = (data || []).map(r => ({
+    'IP': r.ip||'', 'Issue': r.issue||'', 'Action Taken': r.action_taken||'',
+    'Remarks': r.remarks||'', 'Operator': r.operator||'', 'Shift': r.shift||'', 'Date / Time': fmt(r.created_at)
+  }));
+  if (!rows.length) { toast('No data to export.', 'e'); return; }
+  const header = Object.keys(rows[0]);
+  const csv = [header.join(','), ...rows.map(r => header.map(h => `"${(r[h]||'').replace(/"/g,'""')}"`).join(','))].join('\n');
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+  a.download = `bitmain-activities-${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+}
+
+// BITMAIN REPLACEMENT HISTORY
+// ══════════════════════════════════════════════
+let _btRepPage = 0;
+const BT_REP_PAGE_SIZE = 30;
+
+function btRepPage(dir) { _btRepPage += dir; renderBtRep(); }
+
+async function renderBtRep() {
+  const search = (el('bt-rep-s')?.value || '').trim();
+  const date   = el('bt-rep-date')?.value || '';
+  set('bt-rep-tbody', `<tr class="erow"><td colspan="9"><span>⏳</span>Loading…</td></tr>`);
+
+  let q = sb.from('bitmain_replacements')
+    .select('*', { count: 'exact' })
+    .order('created_at', { ascending: false });
+
+  if (date) { q = q.gte('created_at', date + 'T00:00:00').lte('created_at', date + 'T23:59:59'); }
+  if (search) { q = q.or(`new_serial.ilike.%${search}%,old_serial.ilike.%${search}%,ip.ilike.%${search}%,operator.ilike.%${search}%`); }
+
+  const from = _btRepPage * BT_REP_PAGE_SIZE;
+  const { data, count, error } = await q.range(from, from + BT_REP_PAGE_SIZE - 1);
+  const total = count || 0;
+  const totalPages = Math.ceil(total / BT_REP_PAGE_SIZE);
+
+  const pg = el('bt-rep-pagination');
+  if (pg) {
+    pg.style.display = total > BT_REP_PAGE_SIZE ? 'flex' : 'none';
+    set('bt-rep-page-info', `Page ${_btRepPage + 1} of ${totalPages} · ${total} total`);
+    el('bt-rep-prev').disabled = _btRepPage === 0;
+    el('bt-rep-next').disabled = _btRepPage >= totalPages - 1;
+  }
+
+  if (error) { set('bt-rep-tbody', `<tr class="erow"><td colspan="9">Error loading.</td></tr>`); return; }
+
+  const rows = data || [];
+  set('bt-rep-tbody', rows.length ? rows.map((r, i) => `
+    <tr>
+      <td style="color:var(--text3)">${from + i + 1}</td>
+      <td style="font-family:var(--mono);font-size:.76rem">${esc(r.ip)||'—'}</td>
+      <td><span class="serial-link" style="color:var(--green)" onclick="openBtSerialHist('${esc(r.new_serial)}','${esc(r.new_serial)}')">${esc(r.new_serial)||'—'}</span></td>
+      <td><span class="serial-link" onclick="openBtSerialHist('${esc(r.old_serial)}','${esc(r.old_serial)}')">${esc(r.old_serial)||'—'}</span></td>
+      <td>${esc(r.old_status)||'—'}</td>
+      <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(r.remarks)}">${esc(r.remarks)||'—'}</td>
+      <td class="hi">${esc(r.operator)||'—'}</td>
+      <td>${r.shift ? shBadge(r.shift) : '—'}</td>
+      <td style="color:var(--text2)">${fmt(r.created_at)}</td>
+    </tr>`).join('') :
+    `<tr class="erow"><td colspan="9"><span>🔄</span>No replacements yet.</td></tr>`);
+}
+
+async function openBtSerialHist(focusSerial, altSerial) {
+  // focusSerial = the serial clicked; altSerial = the paired serial from same replacement row
+  set('bt-sh-serial-label', `— ${focusSerial}`);
+  set('bt-sh-body', '<div style="color:var(--text3);font-size:.82rem;text-align:center;padding:24px">⏳ Loading…</div>');
+  openModal('modal-bt-serial-hist');
+
+  const [{ data: asNew }, { data: asOld }, { data: curRec }] = await Promise.all([
+    sb.from('bitmain_replacements').select('*').eq('new_serial', focusSerial).order('created_at', { ascending: true }),
+    sb.from('bitmain_replacements').select('*').eq('old_serial', focusSerial).order('created_at', { ascending: true }),
+    sb.from('bitmain_miners').select('*').eq('serial', focusSerial).single(),
+  ]);
+
+  // Merge and deduplicate all replacement events involving this serial
+  const allEvents = [...(asNew||[]), ...(asOld||[])]
+    .filter((v, i, a) => a.findIndex(x => x.id === v.id) === i)
+    .sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+
+  let html = '';
+
+  // Current DB status card
+  html += `<div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-bottom:16px">
+    <div style="font-size:.65rem;color:var(--text3);font-family:var(--mono);text-transform:uppercase;margin-bottom:6px">Current Status in DB</div>
+    <div style="font-family:var(--mono);font-size:.88rem;color:var(--accent);font-weight:700;margin-bottom:5px">${esc(focusSerial)}</div>
+    ${curRec ? `
+      <div style="display:flex;gap:12px;flex-wrap:wrap;font-size:.76rem">
+        <div><span style="color:var(--text3)">Model: </span><span class="hi">${esc(curRec.model||'—')}</span></div>
+        <div><span style="color:var(--text3)">Location: </span><span>${esc(curRec.location||'—')}</span></div>
+        <div><span style="color:var(--text3)">Status: </span><strong style="color:var(--yellow)">${esc(curRec.status||'—')}</strong></div>
+      </div>
+      ${curRec.remarks ? `<div style="font-size:.7rem;color:var(--text3);margin-top:5px;font-style:italic">${esc(curRec.remarks)}</div>` : ''}
+      <div style="font-size:.62rem;color:var(--text3);margin-top:5px">Last updated by ${esc(curRec.updated_by||'—')} · ${fmt(curRec.updated_at)}</div>
+    ` : `<div style="font-size:.76rem;color:var(--text3)">Not found in Bitmain Miners DB</div>`}
+  </div>`;
+
+  // Replacement timeline
+  html += `<div style="font-size:.68rem;color:var(--text3);font-family:var(--mono);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px">Replacement Timeline</div>`;
+  if (!allEvents.length) {
+    html += `<div style="color:var(--text3);font-size:.76rem;font-family:var(--mono);padding:8px 0">No replacement events recorded for this serial.</div>`;
+  } else {
+    html += `<div class="ah-timeline">`;
+    allEvents.forEach((r, i) => {
+      const isLast   = i === allEvents.length - 1;
+      const wasNew   = r.new_serial === focusSerial;
+      const roleLabel = wasNew ? '🟢 Installed (New)' : '🔴 Removed (Old)';
+      html += `
+        <div class="ah-item">
+          <div class="ah-dot-col">
+            <div class="ah-dot" style="background:${isLast ? 'var(--accent)' : 'var(--border2)'}"></div>
+            ${!isLast ? '<div class="ah-dot-line"></div>' : ''}
+          </div>
+          <div class="ah-body">
+            <div class="ah-meta">${fmt(r.created_at)} · ${esc(r.operator||'—')} ${r.shift ? `<span class="chat-shift-tag" style="margin-left:4px">${esc(r.shift)}</span>` : ''}</div>
+            <div style="font-size:.76rem;font-weight:600;color:var(--text);margin-top:3px">${roleLabel}</div>
+            <div style="font-size:.74rem;color:var(--text2);margin-top:2px">
+              IP: <span style="font-family:var(--mono);color:var(--accent)">${esc(r.ip||'—')}</span>
+            </div>
+            <div style="font-size:.74rem;color:var(--text2);margin-top:2px">
+              <span style="color:var(--green);font-family:var(--mono)">${esc(r.new_serial)}</span>
+              <span style="color:var(--text3)"> replaced </span>
+              <span style="font-family:var(--mono)">${esc(r.old_serial)}</span>
+            </div>
+            ${r.old_status ? `<div style="font-size:.68rem;color:var(--text3);margin-top:2px">Old status at replacement: ${esc(r.old_status)}</div>` : ''}
+            ${r.remarks ? `<div style="font-size:.7rem;color:var(--text3);margin-top:3px;font-style:italic">"${esc(r.remarks)}"</div>` : ''}
+          </div>
+        </div>`;
+    });
+    html += `</div>`;
+  }
+
+  set('bt-sh-body', html);
+}
+
+async function openBtEditActivity(id) {
+  showLoading('Loading activity…');
+  const { data, error } = await sb.from('bitmain_activities').select('*').eq('id', id).single();
+  hideLoading();
+  if (error || !data) { toast('Could not load activity.', 'e'); return; }
+
+  // Today-only enforcement: activity must belong to user's active shift AND created today
+  const isAdmin   = CU.role === 'admin';
+  const userShift = CU.activeShift || CU.shift || '';
+  if (!isAdmin) {
+    if (data.shift !== userShift) { toast('You can only edit activities from your active shift.', 'e'); return; }
+    const actDate  = new Date(data.created_at).toDateString();
+    const todayStr = new Date().toDateString();
+    if (actDate !== todayStr) { toast('You can only edit activities logged today.', 'e'); return; }
+    const { start, end } = getShiftWindow(userShift);
+    const actTime = new Date(data.created_at);
+    if (actTime < start || actTime > end) { toast('This activity is outside your current shift window.', 'e'); return; }
+  }
+
+  el('bt-ea-id').value      = data.id;
+  el('bt-ea-shift').value   = data.shift || '';
+  el('bt-ea-created').value = data.created_at;
+  el('bt-ea-ip').value      = data.ip || '';
+  el('bt-ea-issue').value   = data.issue || '';
+  el('bt-ea-action').value  = data.action_taken || '';
+  el('bt-ea-rmk').value     = data.remarks || '';
+  el('bt-ea-status').value  = data.status || '';
+  openModal('modal-bt-edit-activity');
+}
+
+async function saveBtEditActivity() {
+  const id      = el('bt-ea-id').value;
+  const shift   = el('bt-ea-shift').value;
+  const created = el('bt-ea-created').value;
+  const ip      = el('bt-ea-ip').value.trim();
+  const issue   = el('bt-ea-issue').value.trim();
+  const action  = el('bt-ea-action').value.trim();
+  const rmk     = el('bt-ea-rmk').value.trim();
+  const status  = el('bt-ea-status').value;
+
+  const isAdmin   = CU.role === 'admin';
+  const userShift = CU.activeShift || CU.shift || '';
+  if (!isAdmin) {
+    if (shift !== userShift) { toast('You can only edit activities from your active shift.', 'e'); return; }
+    const actDate  = new Date(created).toDateString();
+    const todayStr = new Date().toDateString();
+    if (actDate !== todayStr) { toast('You can only edit activities logged today.', 'e'); return; }
+  }
+
+  showLoading('Saving changes…');
+  const { data: before } = await sb.from('bitmain_activities').select('*').eq('id', id).single();
+
+  const { error } = await sb.from('bitmain_activities').update({
+    ip, issue, action_taken: action, remarks: rmk, status: status || null
+  }).eq('id', id);
+
+  if (error) { hideLoading(); toast('Error saving: ' + error.message, 'e'); return; }
+
+  // Write to bitmain_activity_log
+  if (before) {
+    const changedBy = CU.first_name + ' ' + CU.last_name;
+    const fieldMap = {
+      ip:          { label: 'IP',            old: before.ip,           nw: ip     },
+      issue:       { label: 'Issue',         old: before.issue,        nw: issue  },
+      action_taken:{ label: 'Action Taken',  old: before.action_taken, nw: action },
+      remarks:     { label: 'Remarks',       old: before.remarks,      nw: rmk    },
+      status:      { label: 'Status',        old: before.status,       nw: status || null },
+    };
+    const logRows = Object.entries(fieldMap)
+      .filter(([, f]) => (f.old||'') !== (f.nw||''))
+      .map(([, f]) => ({
+        activity_id:   id,
+        changed_by:    changedBy,
+        changed_by_id: /^[0-9a-f-]{36}$/i.test(CU.id) ? CU.id : null,
+        field_name:    f.label,
+        old_value:     f.old || null,
+        new_value:     f.nw  || null,
+        changed_at:    now()
+      }));
+    if (logRows.length) await sb.from('bitmain_activity_log').insert(logRows);
+  }
+
+  hideLoading();
+  toast('✅ Activity updated.', 's');
+  closeModal('modal-bt-edit-activity');
+  if (!el('page-bt-activities').classList.contains('hidden')) renderBtActivities();
+}
+
+async function openBtActHistory(activityId, ip) {
+  set('bt-ah-ip-label', ip ? `— ${ip}` : '');
+  set('bt-ah-body', '<div style="color:var(--text3);font-size:.82rem;text-align:center;padding:24px">⏳ Loading…</div>');
+  openModal('modal-bt-act-history');
+
+  const [{ data: act }, { data: logs }] = await Promise.all([
+    sb.from('bitmain_activities').select('*').eq('id', activityId).single(),
+    sb.from('bitmain_activity_log').select('*').eq('activity_id', activityId).order('changed_at', { ascending: true })
+  ]);
+
+  if (!act) { set('bt-ah-body', '<div style="color:var(--text3);text-align:center;padding:24px">Could not load history.</div>'); return; }
+
+  const entries = logs || [];
+  if (!entries.length) {
+    set('bt-ah-body', `
+      <div class="ah-timeline">
+        <div class="ah-item">
+          <div class="ah-dot-col"><div class="ah-dot" style="background:var(--green)"></div></div>
+          <div class="ah-body">
+            <div class="ah-meta">${fmt(act.created_at)} · ${esc(act.operator||'Unknown')}</div>
+            <div class="ah-created">Activity created — no edits made yet.</div>
+          </div>
+        </div>
+      </div>`);
+    return;
+  }
+
+  // Group consecutive edits by same timestamp + editor
+  const groups = [];
+  entries.forEach(e => {
+    const last = groups[groups.length - 1];
+    if (last && last.changed_at === e.changed_at && last.changed_by === e.changed_by) {
+      last.changes.push(e);
+    } else {
+      groups.push({ changed_at: e.changed_at, changed_by: e.changed_by, changes: [e] });
+    }
+  });
+
+  set('bt-ah-body', `
+    <div class="ah-timeline">
+      <div class="ah-item">
+        <div class="ah-dot-col">
+          <div class="ah-dot" style="background:var(--green)"></div>
+          <div class="ah-dot-line"></div>
+        </div>
+        <div class="ah-body">
+          <div class="ah-meta">${fmt(act.created_at)} · ${esc(act.operator||'Unknown')}</div>
+          <div class="ah-created">Activity created</div>
+        </div>
+      </div>
+      ${groups.map((g, gi) => `
+        <div class="ah-item">
+          <div class="ah-dot-col">
+            <div class="ah-dot"></div>
+            ${gi < groups.length - 1 ? '<div class="ah-dot-line"></div>' : ''}
+          </div>
+          <div class="ah-body">
+            <div class="ah-meta">${fmt(g.changed_at)} · ${esc(g.changed_by)}</div>
+            <div class="ah-change">
+              ${g.changes.map(c => `
+                <div>
+                  <div class="ah-field">${esc(c.field_name)}</div>
+                  <div class="ah-from-to">
+                    <span class="ah-old">${esc(c.old_value)||'<em style="opacity:.5">empty</em>'}</span>
+                    <span class="ah-arrow">→</span>
+                    <span class="ah-new">${esc(c.new_value)||'<em style="opacity:.5">empty</em>'}</span>
+                  </div>
+                </div>`).join('')}
+            </div>
+          </div>
+        </div>`).join('')}
+    </div>`);
+}
+
+// BITMAIN SERIAL SEARCH
+// ══════════════════════════════════════════════
+async function doBtSerialLookup() {
+  const query = (el('bt-sl-input')?.value || '').trim();
+  if (!query) { toast('Enter a serial number to search.', 'e'); return; }
+  showLoading('Searching…');
+
+  const { data: miners } = await sb.from('bitmain_miners')
+    .select('*').ilike('serial', `%${query}%`).order('serial', { ascending: true }).limit(50);
+  hideLoading();
+
+  const results = miners || [];
+  if (!results.length) {
+    set('bt-sl-results', `<div class="alert aw"><span class="a-icon">⚠️</span><div class="a-text">No records found matching <strong>"${esc(query)}"</strong>. Try a shorter or different part of the serial.</div></div>`);
+    return;
+  }
+
+  // Single exact match — go straight to detail
+  if (results.length === 1) { await showBtSerialDetail(results[0].serial, results[0]); return; }
+
+  // Multiple matches — show list
+  const hl = s => esc(s).replace(new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})`, 'gi'), '<mark style="background:rgba(255,193,7,.22);color:var(--yellow);border-radius:2px;padding:0 2px">$1</mark>');
+  let html = `<div class="alert ai"><span class="a-icon">🔍</span><div class="a-text"><strong>${results.length} record${results.length>1?'s':''} found</strong> matching "${esc(query)}" — click a row to view full details.</div></div>`;
+  html += `<div class="card"><div class="tw"><table>
+    <thead><tr><th>Serial Number</th><th>Model</th><th>Location</th><th>Status</th><th>Remarks</th><th>Last Updated</th></tr></thead>
+    <tbody>${results.map(r => `
+      <tr style="cursor:pointer" onclick="showBtSerialDetail('${esc(r.serial)}')" title="Click to view full history">
+        <td><span style="color:var(--yellow);font-weight:600;font-family:var(--mono)">${hl(r.serial)}</span></td>
+        <td class="hi">${esc(r.model||'—')}</td>
+        <td>${esc(r.location||'—')}</td>
+        <td><span class="badge b-act" style="font-size:.68rem">${esc(r.status||'—')}</span></td>
+        <td class="rmk" title="${esc(r.remarks||'')}">${esc(r.remarks||'—')}</td>
+        <td style="color:var(--text2)">${r.updated_at ? fmt(r.updated_at) : '—'}</td>
+      </tr>`).join('')}
+    </tbody>
+  </table></div></div>`;
+  set('bt-sl-results', html);
+}
+
+async function showBtSerialDetail(serial, rec) {
+  showLoading('Loading history…');
+
+  // If rec not passed (called from table row click), fetch it
+  if (!rec) {
+    const { data } = await sb.from('bitmain_miners').select('*').eq('serial', serial).single();
+    rec = data;
+  }
+
+  // Fetch all replacement events and equipment update logs involving this serial
+  const [{ data: asNew }, { data: asOld }] = await Promise.all([
+    sb.from('bitmain_replacements').select('*').eq('new_serial', serial).order('created_at', { ascending: true }),
+    sb.from('bitmain_replacements').select('*').eq('old_serial', serial).order('created_at', { ascending: true }),
+  ]);
+  hideLoading();
+
+  const query = (el('bt-sl-input')?.value || '').trim();
+  const backBtn = query && query !== serial
+    ? `<button class="btn bs bsm" onclick="doBtSerialLookup()" style="margin-bottom:14px">← Back to results</button>`
+    : '';
+
+  let html = backBtn;
+
+  // Header card
+  html += `<div class="card"><div class="ch">
+    <div class="ct">🔍 <span style="color:var(--yellow);font-family:var(--mono)">${esc(serial)}</span></div>
+    <span class="badge b-act" style="font-size:.68rem">BITMAIN MINER</span>
+  </div>`;
+
+  if (rec) {
+    html += `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:14px">
+      ${rec.model    ? `<div><div class="sl" style="margin-bottom:3px">Model</div><div class="hi" style="font-size:.82rem">${esc(rec.model)}</div></div>` : ''}
+      ${rec.location ? `<div><div class="sl" style="margin-bottom:3px">Location</div><div style="font-size:.82rem">${esc(rec.location)}</div></div>` : ''}
+      <div><div class="sl" style="margin-bottom:3px">Current Status</div><div><span class="badge b-act" style="font-size:.7rem">${esc(rec.status||'—')}</span></div></div>
+      ${rec.remarks  ? `<div><div class="sl" style="margin-bottom:3px">Remarks</div><div style="font-size:.78rem;color:var(--text2)">${esc(rec.remarks)}</div></div>` : ''}
+      ${rec.updated_by ? `<div><div class="sl" style="margin-bottom:3px">Last Updated By</div><div style="font-size:.78rem;color:var(--text2)">${esc(rec.updated_by)}</div></div>` : ''}
+      ${rec.updated_at ? `<div><div class="sl" style="margin-bottom:3px">Last Updated</div><div style="font-size:.77rem;color:var(--text2)">${fmt(rec.updated_at)}</div></div>` : ''}
+    </div><div class="fdiv"></div>`;
+  } else {
+    html += `<div style="color:var(--text3);font-size:.8rem;padding:8px 0 12px">Serial not found in Bitmain Miners DB — showing replacement history only.</div><div class="fdiv"></div>`;
+  }
+
+  // Build replacement timeline
+  const allEvents = [...(asNew||[]), ...(asOld||[])]
+    .filter((v, i, a) => a.findIndex(x => x.id === v.id) === i)
+    .sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+
+  html += `<div class="ct" style="margin-bottom:10px;color:var(--text2);font-size:.77rem">REPLACEMENT TIMELINE (${allEvents.length} event${allEvents.length !== 1 ? 's' : ''})</div>`;
+
+  if (allEvents.length) {
+    html += `<div class="hist-timeline">${allEvents.map(r => {
+      const wasNew  = r.new_serial === serial;
+      const role    = wasNew ? 'Installed (New)' : 'Removed (Old)';
+      const detail  = `IP: ${r.ip||'—'} | ${wasNew ? 'Replaced: ' + r.old_serial : 'Replaced by: ' + r.new_serial}${r.old_status ? ' | Prior status: ' + r.old_status : ''}${r.remarks ? ' | Remarks: ' + r.remarks : ''}`;
+      return `<div class="hist-entry"><div class="hist-dot" style="${wasNew ? 'background:var(--green)' : ''}"></div>
+        <div class="hist-body">
+          <div class="hist-action">${role} ${r.shift ? `<span class="chat-shift-tag" style="margin-left:6px">${esc(r.shift)}</span>` : ''}</div>
+          <div class="hist-meta">By <strong>${esc(r.operator||'—')}</strong> · ${fmt(r.created_at)}</div>
+          <div class="hist-detail">${esc(detail)}</div>
+        </div></div>`;
+    }).join('')}</div>`;
+  } else {
+    html += `<div style="color:var(--text3);font-size:.82rem;text-align:center;padding:20px">No replacement history recorded for this serial.</div>`;
+  }
+
+  html += '</div>';
+  set('bt-sl-results', html);
+}
+
+
+// ══════════════════════════════════════════════
+let _btMinerRowCount = 0;
+
+function addBtMinerRow() {
+  _btMinerRowCount++;
+  const idx = _btMinerRowCount;
+  const row = document.createElement('div');
+  row.className = 'act-row';
+  row.id = `bt-miner-row-${idx}`;
+  row.innerHTML = `
+    <div class="act-row-num">Replacement #${idx}</div>
+    ${idx > 1 ? `<button class="act-row-remove" onclick="el('bt-miner-row-${idx}').remove()" title="Remove">✕</button>` : ''}
+    <div class="fgrid">
+      <div class="fg"><label class="fl">IP</label><input class="fi" id="bt-mr-ip-${idx}" placeholder="e.g. 192.168.10.100"/></div>
+      <div class="fg"><label class="fl">New Serial <span style="color:var(--green);font-size:.6rem">→ Onboarded</span></label><input class="fi" id="bt-mr-ns-${idx}" placeholder="New miner serial"/></div>
+      <div class="fg"><label class="fl">Old Serial <span style="color:var(--yellow);font-size:.6rem">→ For Repair</span></label><input class="fi" id="bt-mr-os-${idx}" placeholder="Old miner serial"/></div>
+      <div class="fg"><label class="fl">Logs / Remarks</label><input class="fi" id="bt-mr-rmk-${idx}" placeholder="Reason for replacement, notes…"/></div>
+    </div>`;
+  el('bt-miner-rows-wrap').appendChild(row);
+}
+
+async function submitBtMiners() {
+  const rows = el('bt-miner-rows-wrap').querySelectorAll('.act-row');
+  if (!rows.length) { toast('No replacements to submit.', 'e'); return; }
+
+  const op = CU.first_name + ' ' + CU.last_name;
+  const sh = CU.activeShift || CU.shift || '';
+  const inserts = [], minerUpdates = [];
+  let hasError = false;
+
+  for (const row of rows) {
+    const idx = row.id.replace('bt-miner-row-', '');
+    const ip  = el(`bt-mr-ip-${idx}`)?.value?.trim() || '';
+    const ns  = el(`bt-mr-ns-${idx}`)?.value?.trim().toUpperCase();
+    const os  = el(`bt-mr-os-${idx}`)?.value?.trim().toUpperCase();
+    const rmk = el(`bt-mr-rmk-${idx}`)?.value?.trim() || '';
+    if (!ns || !os) { toast(`Replacement #${idx}: New Serial and Old Serial are required.`, 'e'); hasError = true; break; }
+    if (ns === os)  { toast(`Replacement #${idx}: New and Old serial cannot be the same.`, 'e'); hasError = true; break; }
+
+    // Look up old serial's current status
+    const { data: oldRec } = await sb.from('bitmain_miners').select('status,model,location').eq('serial', os).single();
+    const oldStatus = oldRec?.status || 'Unknown';
+
+    inserts.push({ ip, new_serial: ns, old_serial: os, old_status: oldStatus, remarks: rmk, operator: op, operator_id: /^[0-9a-f-]{36}$/i.test(CU.id) ? CU.id : null, shift: sh, created_at: now() });
+    minerUpdates.push({ ns, os, ip, rmk, oldModel: oldRec?.model || '', oldLoc: oldRec?.location || '' });
+  }
+  if (hasError) return;
+
+  showLoading(`Recording ${inserts.length} replacement${inserts.length > 1 ? 's' : ''}…`);
+
+  // Insert replacement records
+  const { error: repErr } = await sb.from('bitmain_replacements').insert(inserts);
+  if (repErr) { hideLoading(); toast('Error saving replacements: ' + repErr.message, 'e'); return; }
+
+  // Update bitmain_miners DB
+  for (const u of minerUpdates) {
+    // New serial → Onboarded (upsert)
+    await sb.from('bitmain_miners').upsert({ serial: u.ns, status: 'Onboarded', location: u.ip || u.oldLoc, model: u.oldModel, remarks: '', updated_by: op, updated_at: now() });
+    // Old serial → For Repair, attach remarks
+    await sb.from('bitmain_miners').upsert({ serial: u.os, status: 'For Repair', location: u.ip || u.oldLoc, model: u.oldModel, remarks: u.rmk, updated_by: op, updated_at: now() });
+  }
+
+  hideLoading();
+  toast(`✅ ${inserts.length} replacement${inserts.length > 1 ? 's' : ''} recorded.`, 's');
+  go('bt-rep');
+}
+
+// BITMAIN EQUIPMENT UPDATE
+// ══════════════════════════════════════════════
+let _btEuRowCount = 0;
+const BT_EU_STATUSES = ['Onboarded', 'For Repair', 'Sent back to BM', 'Sent for Repair'];
+
+function openBtEquipUpdate() {
+  _btEuRowCount = 0;
+  el('bt-eu-rows-wrap').innerHTML = '';
+  addBtEuRow();
+  openModal('modal-bt-equip');
+}
+
+function addBtEuRow() {
+  _btEuRowCount++;
+  const idx = _btEuRowCount;
+  const statusOpts = BT_EU_STATUSES.map(s => `<option value="${s}">${s}</option>`).join('');
+  const row = document.createElement('div');
+  row.className = 'act-row';
+  row.id = `bt-eu-row-${idx}`;
+  row.innerHTML = `
+    <div class="act-row-num">Update #${idx}</div>
+    ${idx > 1 ? `<button class="act-row-remove" onclick="el('bt-eu-row-${idx}').remove()" title="Remove">✕</button>` : ''}
+    <div class="fgrid">
+      <div class="fg">
+        <label class="fl">Serial Number</label>
+        <input class="fi" id="bt-eu-serial-${idx}" placeholder="Miner serial number" oninput="this.value=this.value.toUpperCase()"/>
+      </div>
+      <div class="fg">
+        <label class="fl">Status</label>
+        <select class="fs" id="bt-eu-status-${idx}" onchange="btEuStatusChange(${idx})">
+          <option value="">Select status…</option>
+          ${statusOpts}
+        </select>
+      </div>
+      <div class="fg bt-eu-loc-wrap-${idx}" style="display:none">
+        <label class="fl">Repair Location</label>
+        <select class="fs" id="bt-eu-loc-${idx}">
+          <option value="MadZ">MadZ</option>
+          <option value="Masdar">Masdar</option>
+        </select>
+      </div>
+    </div>`;
+  el('bt-eu-rows-wrap').appendChild(row);
+}
+
+function btEuStatusChange(idx) {
+  const status = el(`bt-eu-status-${idx}`)?.value;
+  const locWrap = document.querySelector(`.bt-eu-loc-wrap-${idx}`);
+  if (locWrap) locWrap.style.display = status === 'Sent for Repair' ? '' : 'none';
+}
+
+async function submitBtEquipUpdates() {
+  const rows = el('bt-eu-rows-wrap').querySelectorAll('.act-row');
+  if (!rows.length) { toast('No updates to submit.', 'e'); return; }
+
+  const op = CU.first_name + ' ' + CU.last_name;
+  const updates = [];
+  let hasError = false;
+
+  rows.forEach(row => {
+    const idx    = row.id.replace('bt-eu-row-', '');
+    const serial = el(`bt-eu-serial-${idx}`)?.value?.trim().toUpperCase();
+    const status = el(`bt-eu-status-${idx}`)?.value;
+    const loc    = el(`bt-eu-loc-${idx}`)?.value || '';
+    if (!serial) { toast(`Update #${idx}: Serial Number is required.`, 'e'); hasError = true; return; }
+    if (!status) { toast(`Update #${idx}: Please select a status.`, 'e'); hasError = true; return; }
+    const finalStatus = status === 'Sent for Repair' ? `Sent for Repair - ${loc}` : status;
+    updates.push({ serial, status: finalStatus });
+  });
+  if (hasError) return;
+
+  showLoading(`Updating ${updates.length} miner${updates.length > 1 ? 's' : ''}…`);
+  let errCount = 0;
+  for (const u of updates) {
+    const { error } = await sb.from('bitmain_miners')
+      .update({ status: u.status, updated_by: op, updated_at: now() })
+      .eq('serial', u.serial);
+    if (error) errCount++;
+  }
+  hideLoading();
+
+  if (errCount > 0) toast(`⚠️ ${errCount} update(s) failed. Check serial numbers.`, 'w');
+  else { toast(`✅ ${updates.length} miner${updates.length > 1 ? 's' : ''} updated.`, 's'); closeModal('modal-bt-equip'); }
+
+  if (!el('page-bitmain-home').classList.contains('hidden')) { renderBtHomeFleet(); renderBtHydroBreakdown(); }
+}
+
 // OPERATIONS INSIGHTS
 // ══════════════════════════════════════════════
 let _insightsLoaded = false;
