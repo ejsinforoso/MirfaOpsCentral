@@ -5770,7 +5770,7 @@ function _renderChatMessages(msgs) {
       html += `<div class="chat-date-sep">${dateLabel}</div>`;
       lastDate = dateLabel;
     }
-    const isMe     = msg.sender_id === CU.id;
+    const isMe     = !!CU.id && msg.sender_id === CU.id;
     const initials = (msg.sender_name || '?').split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
     const shiftTag = msg.shift ? `<span class="chat-shift-tag">${esc(msg.shift)}</span>` : '';
     html += `
@@ -5837,29 +5837,34 @@ async function initChat() {
 
   // ── New messages ──
   .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, payload => {
-    const msg    = payload.new;
-    const box    = el('chat-messages');
-    const empty  = box?.querySelector('#chat-empty');
+    const msg = payload.new;
+
+    // Skip own messages — already appended locally in sendChat()
+    const isUUID = /^[0-9a-f-]{36}$/i.test(CU.id);
+    const isMe   = isUUID && msg.sender_id === CU.id;
+    if (isMe) return;
+
+    const box   = el('chat-messages');
+    const empty = box?.querySelector('#chat-empty');
     if (empty) box.innerHTML = '';
 
-    const isMe     = msg.sender_id === CU.id;
     const initials = (msg.sender_name || '?').split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
     const shiftTag = msg.shift ? `<span class="chat-shift-tag">${esc(msg.shift)}</span>` : '';
     const div = document.createElement('div');
-    div.className = `chat-msg ${isMe ? 'me' : 'them'}`;
+    div.className = 'chat-msg them';
     div.innerHTML = `
       <div class="chat-bubble-wrap">
         <div class="chat-avatar">${initials}</div>
         <div class="chat-text">${esc(msg.message)}</div>
       </div>
       <div class="chat-meta">
-        ${!isMe ? `<span>${esc(msg.sender_name)}</span>` : ''}
+        <span>${esc(msg.sender_name)}</span>
         ${shiftTag}
         <span>${_chatTimeLabel(msg.created_at)}</span>
       </div>`;
     box?.appendChild(div);
 
-    if (!_chatOpen && !isMe) {
+    if (!_chatOpen) {
       _chatUnread++;
       const badge = el('chat-unread');
       badge.style.display = '';
@@ -5889,16 +5894,46 @@ async function sendChat() {
   input.value = '';
   input.style.height = '34px';
 
+  const senderName = CU.first_name + ' ' + CU.last_name;
+  const shift      = CU.activeShift || CU.shift || '';
+  const isUUID     = /^[0-9a-f-]{36}$/i.test(CU.id);
+  const ts         = now();
+
   const { error } = await sb.from('messages').insert({
-    sender_id:   CU.id,
-    sender_name: CU.first_name + ' ' + CU.last_name,
-    shift:       CU.activeShift || CU.shift || '',
+    sender_id:   isUUID ? CU.id : null,
+    sender_name: senderName,
+    shift,
     message:     msg,
-    created_at:  now()
+    created_at:  ts
   });
 
   btn.disabled = false;
-  if (error) { toast('Failed to send message.', 'e'); input.value = msg; }
+
+  if (error) {
+    toast('Failed to send message.', 'e');
+    input.value = msg;
+    return;
+  }
+
+  // Append own message immediately — postgres_changes doesn't echo back to sender
+  const box    = el('chat-messages');
+  const empty  = box?.querySelector('#chat-empty');
+  if (empty) box.innerHTML = '';
+  const initials = senderName.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
+  const shiftTag = shift ? `<span class="chat-shift-tag">${esc(shift)}</span>` : '';
+  const div = document.createElement('div');
+  div.className = 'chat-msg me';
+  div.innerHTML = `
+    <div class="chat-bubble-wrap">
+      <div class="chat-avatar">${initials}</div>
+      <div class="chat-text">${esc(msg)}</div>
+    </div>
+    <div class="chat-meta">
+      ${shiftTag}
+      <span>${_chatTimeLabel(ts)}</span>
+    </div>`;
+  box?.appendChild(div);
+  scrollChatBottom();
 }
 
 // ══════════════════════════════════════════════
