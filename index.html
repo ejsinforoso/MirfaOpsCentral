@@ -755,9 +755,21 @@ td.rmk{color:var(--text2);font-size:.74rem;max-width:180px;overflow:hidden;text-
         <div class="status-overview" style="margin-top:14px">
           <div class="so-title">
             <span>PSU Fleet — Status Overview</span>
-            <span id="so-psu-total" style="font-size:.78rem;color:var(--text2);font-weight:400;font-family:var(--mono)"></span>
           </div>
-          <div class="so-bars" id="so-psu-bars">
+          <!-- Antminer PSUs -->
+          <div style="display:flex;justify-content:space-between;align-items:center;margin:10px 0 6px">
+            <span style="font-size:.86rem;font-weight:600;color:var(--text1);letter-spacing:.04em">Antminer</span>
+            <span id="so-psu-ant-total" style="font-size:.75rem;color:var(--text2);font-family:var(--mono)"></span>
+          </div>
+          <div class="so-bars" id="so-psu-ant-bars">
+            <div style="color:var(--text3);font-size:.8rem;text-align:center;padding:20px">Loading…</div>
+          </div>
+          <!-- Avalon PSUs -->
+          <div style="display:flex;justify-content:space-between;align-items:center;margin:16px 0 6px">
+            <span style="font-size:.86rem;font-weight:600;color:var(--text1);letter-spacing:.04em">Avalon</span>
+            <span id="so-psu-ava-total" style="font-size:.75rem;color:var(--text2);font-family:var(--mono)"></span>
+          </div>
+          <div class="so-bars" id="so-psu-ava-bars">
             <div style="color:var(--text3);font-size:.8rem;text-align:center;padding:20px">Loading…</div>
           </div>
         </div>
@@ -1009,7 +1021,15 @@ td.rmk{color:var(--text2);font-size:.74rem;max-width:180px;overflow:hidden;text-
         </div>
         <div class="fbar">
           <input class="fi" id="pdb-s" placeholder="Search serial, model, location…" oninput="_pdbPage=0;renderPSUDB()"/>
-          <select class="fs" id="pdb-st" onchange="_pdbPage=0;renderPSUDB()"><option value="">All Statuses</option><option>Tested</option><option>Faulty</option><option>For Testing</option></select>
+          <select class="fs" id="pdb-st" onchange="_pdbPage=0;renderPSUDB()" style="max-width:200px">
+            <option value="">All Statuses</option>
+            <optgroup label="Antminer">
+              <option>Tested</option><option>Faulty</option><option>For Testing</option>
+            </optgroup>
+            <optgroup label="Avalon">
+              <option>New Spare</option><option>Operational</option><option>Repaired</option><option>For Repair</option><option>Sent for Repair</option><option>Scrapped</option>
+            </optgroup>
+          </select>
           <span id="pdb-filter-count" style="font-size:.78rem;font-weight:600;color:var(--accent);font-family:'Montserrat',sans-serif;padding:5px 11px;background:var(--adim);border:1px solid rgba(0,184,217,.2);border-radius:var(--r);white-space:nowrap;display:none"></span>
         </div>
         <div class="card"><div class="tw"><table>
@@ -1185,7 +1205,10 @@ td.rmk{color:var(--text2);font-size:.74rem;max-width:180px;overflow:hidden;text-
     <div class="fg"><label class="fl">Model</label><select class="fs" id="edit-psu-model"><option>GPW121215</option><option>APW121215</option></select></div>
     <div class="fg"><label class="fl">Type</label><select class="fs" id="edit-psu-type"><option>Antminer</option><option>Avalon</option></select></div>
     <div class="fg"><label class="fl">Location</label><input class="fi" id="edit-psu-loc"/></div>
-    <div class="fg"><label class="fl">Status</label><select class="fs" id="edit-psu-status"><option>Tested</option><option>Faulty</option><option>For Testing</option></select></div>
+    <div class="fg"><label class="fl">Status</label><select class="fs" id="edit-psu-status">
+      <optgroup label="Antminer"><option>Tested</option><option>Faulty</option><option>For Testing</option></optgroup>
+      <optgroup label="Avalon"><option>New Spare</option><option>Operational</option><option>Repaired</option><option>For Repair</option><option>Sent for Repair</option><option>Scrapped</option></optgroup>
+    </select></div>
     <div class="fg"><label class="fl">Remarks / Notes</label><textarea class="fta" id="edit-psu-remarks"></textarea></div>
   </div>
   <div class="mf"><button class="btn bs" onclick="closeModal('modal-edit-psu')">Cancel</button><button class="btn bp" onclick="saveEditPSU()">Save Changes</button></div>
@@ -1234,7 +1257,7 @@ td.rmk{color:var(--text2);font-size:.74rem;max-width:180px;overflow:hidden;text-
 <!-- Import PSU -->
 <div id="modal-import-psu" class="mo hidden"><div class="md md-lg">
   <div class="mt">⬆ Import PSU Data</div>
-  <div class="alert ai"><span class="a-icon">ℹ️</span><div class="a-text">Columns: <strong>Serial Number, PSU Model, Type, Location, Status, Remarks</strong><br/>Statuses: Tested · Faulty · For Testing</div></div>
+  <div class="alert ai"><span class="a-icon">ℹ️</span><div class="a-text">Columns: <strong>Serial Number, PSU Model, Type, Location, Status, Remarks</strong><br/>Antminer statuses: Tested · Faulty · For Testing<br/>Avalon statuses: New Spare · Operational · Repaired · For Repair · Sent for Repair · Scrapped</div></div>
   <div class="drop-zone"><input type="file" accept=".xlsx,.xls,.csv" id="file-psu" onchange="handleFile('psu')"/>
     <div class="dz-icon">📂</div><div class="dz-title">Click or drag &amp; drop Excel / CSV</div><div class="dz-sub">.xlsx · .xls · .csv</div>
   </div>
@@ -2177,14 +2200,10 @@ async function subAllMiners() {
   if (hasError) return;
   showLoading(`Saving ${inserts.length} replacement${inserts.length>1?'s':''}…`);
   for (const r of inserts) {
-    // Fetch old serial's current location before clearing it
-    const { data: oldRec } = await sb.from('miners').select('location').eq('serial', r.os).single();
-    const oldLoc = oldRec?.location || '—';
-
-    await dbUpsertMiner({ serial:r.ns, location:r.loc, status:'Onboarded', remarks:r.rmk, updatedBy:op });
-    await dbUpsertMiner({ serial:r.os, location:'', status:r.ost, remarks:'', updatedBy:op });
-    await dbLog(r.ns, 'Replacement — New Unit', `Location: ${r.loc} | Status: Onboarded${r.rmk?' | Remarks: '+r.rmk:''}`, op);
-    await dbLog(r.os, 'Replacement — Removed',  `Last Location: ${oldLoc} | New Status: ${r.ost}${r.rmk?' | Remarks: '+r.rmk:''}`, op);
+    await dbUpsertMiner({ serial:r.ns, location:r.loc, status:'Onboarded', remarks:'', updatedBy:op });
+    await dbUpsertMiner({ serial:r.os, location:'WH1', status:r.ost, remarks:r.rmk, updatedBy:op });
+    await dbLog(r.ns, 'Replacement — New Unit', `Location: ${r.loc} | Status: Onboarded`, op);
+    await dbLog(r.os, 'Replacement — Removed',  `Location: WH1 | New Status: ${r.ost}${r.rmk?' | Remarks: '+r.rmk:''}`, op);
     await sb.from('miner_replacements').insert({
       location:r.loc, new_serial:r.ns, new_status:'Onboarded',
       old_serial:r.os, old_status:r.ost, remarks:r.rmk,
@@ -2251,14 +2270,10 @@ async function subAllPSUs() {
   if (hasError) return;
   showLoading(`Saving ${inserts.length} replacement${inserts.length>1?'s':''}…`);
   for (const r of inserts) {
-    // Fetch old serial's current location before clearing it
-    const { data: oldRec } = await sb.from('psus').select('location').eq('serial', r.os).single();
-    const oldLoc = oldRec?.location || '—';
-
-    await dbUpsertPSU({ serial:r.ns, model:r.model, type:r.type, location:r.loc, status:'Tested', remarks:r.rmk, updatedBy:op });
-    await dbUpsertPSU({ serial:r.os, model:r.model, type:r.type, location:'', status:r.ost, remarks:'', updatedBy:op });
+    await dbUpsertPSU({ serial:r.ns, model:r.model, type:r.type, location:r.loc, status:'Tested', remarks:'', updatedBy:op });
+    await dbUpsertPSU({ serial:r.os, model:r.model, type:r.type, location:'WH1', status:r.ost, remarks:r.rmk, updatedBy:op });
     await dbLog(r.ns, 'Replacement — New PSU', `Model: ${r.model} | Type: ${r.type} | Location: ${r.loc} | Status: Tested`, op);
-    await dbLog(r.os, 'Replacement — Removed PSU', `Model: ${r.model} | Last Location: ${oldLoc} | New Status: ${r.ost}${r.rmk?' | Remarks: '+r.rmk:''}`, op);
+    await dbLog(r.os, 'Replacement — Removed PSU', `Model: ${r.model} | Location: WH1 | New Status: ${r.ost}${r.rmk?' | Remarks: '+r.rmk:''}`, op);
     await sb.from('psu_replacements').insert({
       model:r.model, type:r.type, location:r.loc, new_serial:r.ns, new_status:'Tested',
       old_serial:r.os, old_status:r.ost, remarks:r.rmk,
@@ -2484,20 +2499,26 @@ async function renderDashSilent() {
     totalMiners = allMiners.length;
   }
 
-  let psuCounts = {}, totalPSUs = 0;
-  if (psuCountsRaw) {
-    psuCountsRaw.forEach(r => { psuCounts[r.status] = r.count; totalPSUs += Number(r.count); });
-  } else {
+  let antminerCounts = {}, avalonCounts = {}, totalAntminer = 0, totalAvalon = 0;
+  {
     let allPSUs = [], pfrom = 0;
     while (true) {
-      const { data } = await sb.from('psus').select('status').range(pfrom, pfrom + 999);
+      const { data } = await sb.from('psus').select('type,status').range(pfrom, pfrom + 999);
       if (!data || data.length === 0) break;
       allPSUs = allPSUs.concat(data);
       if (data.length < 1000) break;
       pfrom += 1000;
     }
-    allPSUs.forEach(p => { psuCounts[p.status] = (psuCounts[p.status] || 0) + 1; });
-    totalPSUs = allPSUs.length;
+    allPSUs.forEach(p => {
+      const t = (p.type || '').trim().toLowerCase();
+      if (t === 'avalon') {
+        avalonCounts[p.status] = (avalonCounts[p.status] || 0) + 1;
+        totalAvalon++;
+      } else {
+        antminerCounts[p.status] = (antminerCounts[p.status] || 0) + 1;
+        totalAntminer++;
+      }
+    });
   }
 
   // Update bar chart — clickable rows
@@ -2527,17 +2548,26 @@ async function renderDashSilent() {
   }).join('');
   set('status-cards', cardsHtml);
 
-  // ── PSU status overview ──────────────────────
-  const PSU_STATUSES = ['Tested', 'For Testing', 'Faulty'];
+  // ── PSU status overview — split by type ──────────────────────
+  const ANT_STATUSES = ['Tested', 'For Testing', 'Faulty'];
+  const AVA_STATUSES = ['New Spare', 'Operational', 'Repaired', 'For Repair', 'Sent for Repair', 'Scrapped'];
   const PSU_STYLE = {
-    'Tested':      { color: 'var(--green)',  sc: 'scg' },
-    'For Testing': { color: 'var(--yellow)', sc: 'scy' },
-    'Faulty':      { color: 'var(--red)',    sc: 'scr' },
+    'Tested':          { color: 'var(--green)',  sc: 'scg' },
+    'For Testing':     { color: 'var(--yellow)', sc: 'scy' },
+    'Faulty':          { color: 'var(--red)',    sc: 'scr' },
+    'New Spare':       { color: 'var(--green)',  sc: 'scg' },
+    'Operational':     { color: 'var(--accent)', sc: 'sca' },
+    'Repaired':        { color: '#4fc3f7',       sc: 'scg' },
+    'For Repair':      { color: 'var(--yellow)', sc: 'scy' },
+    'Sent for Repair': { color: 'var(--yellow)', sc: 'scy' },
+    'Scrapped':        { color: '#888',          sc: 'scn' },
   };
-  set('so-psu-total', `${totalPSUs} total PSUs`);
-  const psuBarsHtml = PSU_STATUSES.map(s => {
-    const count = psuCounts[s] || 0;
-    const pct = totalPSUs > 0 ? (count / totalPSUs * 100).toFixed(1) : 0;
+
+  // Antminer section
+  set('so-psu-ant-total', `${totalAntminer} total PSUs`);
+  const antBarsHtml = ANT_STATUSES.map(s => {
+    const count = antminerCounts[s] || 0;
+    const pct = totalAntminer > 0 ? (count / totalAntminer * 100).toFixed(1) : 0;
     const st = PSU_STYLE[s] || { color: '#888' };
     return `<div class="so-row so-row-click" onclick="openStatusDrill('psu','${s}',${count})" title="Click to view ${count} PSUs">
       <div class="so-label">${s}</div>
@@ -2547,8 +2577,29 @@ async function renderDashSilent() {
       <div class="so-arrow">›</div>
     </div>`;
   }).join('');
-  set('so-psu-bars', psuBarsHtml || '<div style="color:var(--text3);font-size:.8rem;text-align:center;padding:20px">No PSUs in database yet.</div>');
-  const psuCardsHtml = PSU_STATUSES.map(s => {
+  set('so-psu-ant-bars', antBarsHtml || '<div style="color:var(--text3);font-size:.8rem;text-align:center;padding:20px">No Antminer PSUs yet.</div>');
+
+  // Avalon section
+  set('so-psu-ava-total', `${totalAvalon} total PSUs`);
+  const avaBarsHtml = AVA_STATUSES.map(s => {
+    const count = avalonCounts[s] || 0;
+    const pct = totalAvalon > 0 ? (count / totalAvalon * 100).toFixed(1) : 0;
+    const st = PSU_STYLE[s] || { color: '#888' };
+    return `<div class="so-row so-row-click" onclick="openStatusDrill('psu','${s}',${count})" title="Click to view ${count} PSUs">
+      <div class="so-label">${s}</div>
+      <div class="so-bar-wrap"><div class="so-bar" style="width:${pct}%;background:${st.color}"></div></div>
+      <div class="so-count">${count}</div>
+      <div class="so-pct">${pct}%</div>
+      <div class="so-arrow">›</div>
+    </div>`;
+  }).join('');
+  set('so-psu-ava-bars', avaBarsHtml || '<div style="color:var(--text3);font-size:.8rem;text-align:center;padding:20px">No Avalon PSUs yet.</div>');
+
+  // PSU Status Breakdown cards — combined
+  const psuCounts = {...antminerCounts, ...avalonCounts};
+  const totalPSUs = totalAntminer + totalAvalon;
+  const ALL_PSU_STATUSES = [...ANT_STATUSES, ...AVA_STATUSES];
+  const psuCardsHtml = ALL_PSU_STATUSES.map(s => {
     const count = psuCounts[s] || 0;
     const st = PSU_STYLE[s] || { sc: 'sca' };
     return `<div class="sc ${st.sc} sc-click" onclick="openStatusDrill('psu','${s}',${count})" title="View ${count} PSUs">
@@ -3361,7 +3412,7 @@ function showImportPreview(type, rows) {
   pe.classList.remove('hidden'); be.classList.remove('hidden'); be.textContent=`Import ${rows.length} records`;
 }
 const BT_VALID_STATUSES = ['Onboarded','For Repair','Sent back to BM','Sent for Repair - MadZ'];
-const PSU_VALID_STATUSES = ['Tested','For Testing','Faulty'];
+const PSU_VALID_STATUSES = ['Tested','For Testing','Faulty','New Spare','Operational','Repaired','For Repair','Sent for Repair','Scrapped'];
 
 function sanitiseStatus(raw, validList, fallback) {
   if (!raw) return fallback;
