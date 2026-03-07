@@ -2177,10 +2177,14 @@ async function subAllMiners() {
   if (hasError) return;
   showLoading(`Saving ${inserts.length} replacement${inserts.length>1?'s':''}…`);
   for (const r of inserts) {
+    // Fetch old serial's current location before clearing it
+    const { data: oldRec } = await sb.from('miners').select('location').eq('serial', r.os).single();
+    const oldLoc = oldRec?.location || '—';
+
     await dbUpsertMiner({ serial:r.ns, location:r.loc, status:'Onboarded', remarks:r.rmk, updatedBy:op });
     await dbUpsertMiner({ serial:r.os, location:'', status:r.ost, remarks:'', updatedBy:op });
     await dbLog(r.ns, 'Replacement — New Unit', `Location: ${r.loc} | Status: Onboarded${r.rmk?' | Remarks: '+r.rmk:''}`, op);
-    await dbLog(r.os, 'Replacement — Removed',  `New Status: ${r.ost}${r.rmk?' | Remarks: '+r.rmk:''}`, op);
+    await dbLog(r.os, 'Replacement — Removed',  `Last Location: ${oldLoc} | New Status: ${r.ost}${r.rmk?' | Remarks: '+r.rmk:''}`, op);
     await sb.from('miner_replacements').insert({
       location:r.loc, new_serial:r.ns, new_status:'Onboarded',
       old_serial:r.os, old_status:r.ost, remarks:r.rmk,
@@ -2247,10 +2251,14 @@ async function subAllPSUs() {
   if (hasError) return;
   showLoading(`Saving ${inserts.length} replacement${inserts.length>1?'s':''}…`);
   for (const r of inserts) {
+    // Fetch old serial's current location before clearing it
+    const { data: oldRec } = await sb.from('psus').select('location').eq('serial', r.os).single();
+    const oldLoc = oldRec?.location || '—';
+
     await dbUpsertPSU({ serial:r.ns, model:r.model, type:r.type, location:r.loc, status:'Tested', remarks:r.rmk, updatedBy:op });
     await dbUpsertPSU({ serial:r.os, model:r.model, type:r.type, location:'', status:r.ost, remarks:'', updatedBy:op });
     await dbLog(r.ns, 'Replacement — New PSU', `Model: ${r.model} | Type: ${r.type} | Location: ${r.loc} | Status: Tested`, op);
-    await dbLog(r.os, 'Replacement — Removed PSU', `Model: ${r.model} | New Status: ${r.ost}${r.rmk?' | Remarks: '+r.rmk:''}`, op);
+    await dbLog(r.os, 'Replacement — Removed PSU', `Model: ${r.model} | Last Location: ${oldLoc} | New Status: ${r.ost}${r.rmk?' | Remarks: '+r.rmk:''}`, op);
     await sb.from('psu_replacements').insert({
       model:r.model, type:r.type, location:r.loc, new_serial:r.ns, new_status:'Tested',
       old_serial:r.os, old_status:r.ost, remarks:r.rmk,
@@ -3100,11 +3108,13 @@ async function showSerialDetail(serial, type, rec) {
   allLogs.forEach(l => timeline.push({ ts: l.created_at, action: l.action, detail: l.details, by: l.operator }));
   allRelM.forEach(r => {
     const role = r.new_serial === serial ? 'Installed (New Unit)' : 'Removed (Replaced)';
-    timeline.push({ ts: r.created_at, action: `Miner Replacement — ${role}`, detail: `Model: ${r.model} | Location: ${r.location||'—'} | ${r.new_serial===serial?'Status: '+r.new_status:'New Status: '+r.old_status}${r.remarks?' | Remarks: '+r.remarks:''}`, by: r.operator });
+    const locPart = r.new_serial === serial ? `Location: ${r.location||'—'}` : `Last Location: ${r.location||'—'}`;
+    timeline.push({ ts: r.created_at, action: `Miner Replacement — ${role}`, detail: `${locPart} | ${r.new_serial===serial?'Status: '+r.new_status:'New Status: '+r.old_status}${r.remarks?' | Remarks: '+r.remarks:''}`, by: r.operator });
   });
   allRelP.forEach(r => {
     const role = r.new_serial === serial ? 'Installed (New PSU)' : 'Removed (Replaced)';
-    timeline.push({ ts: r.created_at, action: `PSU Replacement — ${role}`, detail: `Model: ${r.model} | Type: ${r.type||'—'} | ${r.new_serial===serial?'Status: '+r.new_status:'New Status: '+r.old_status}${r.remarks?' | Remarks: '+r.remarks:''}`, by: r.operator });
+    const locPart = r.new_serial === serial ? `Location: ${r.location||'—'}` : `Last Location: ${r.location||'—'}`;
+    timeline.push({ ts: r.created_at, action: `PSU Replacement — ${role}`, detail: `Model: ${r.model} | Type: ${r.type||'—'} | ${locPart} | ${r.new_serial===serial?'Status: '+r.new_status:'New Status: '+r.old_status}${r.remarks?' | Remarks: '+r.remarks:''}`, by: r.operator });
   });
   timeline.sort((a, b) => new Date(b.ts) - new Date(a.ts));
 
