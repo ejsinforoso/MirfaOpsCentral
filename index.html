@@ -390,11 +390,13 @@ td.rmk{color:var(--text2);font-size:.74rem;max-width:180px;overflow:hidden;text-
 
 /* TEAM CHAT */
 #chat-bubble{position:fixed;bottom:22px;right:22px;z-index:800;display:flex;flex-direction:column;align-items:flex-end;gap:10px}
-#chat-btn{width:50px;height:50px;border-radius:50%;background:var(--accent);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.22rem;box-shadow:0 4px 18px var(--aglow);transition:var(--t);flex-shrink:0}
+#chat-btn{position:absolute;inset:0;width:50px;height:50px;border-radius:50%;background:var(--accent);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.22rem;box-shadow:0 4px 18px var(--aglow);transition:var(--t);flex-shrink:0}
 #chat-btn:hover{transform:scale(1.08);filter:brightness(1.12)}
-#chat-unread{position:absolute;top:-3px;right:-3px;background:var(--red);color:#fff;border-radius:8px;padding:1px 6px;font-size:.6rem;font-weight:700;font-family:var(--mono);border:2px solid var(--bg);min-width:18px;text-align:center;display:none}
-#chat-online-bubble{position:absolute;bottom:-4px;left:-4px;background:var(--green);color:#fff;border-radius:8px;padding:1px 5px;font-size:.58rem;font-weight:700;font-family:var(--mono);border:2px solid var(--bg);min-width:18px;text-align:center;display:none}
+#chat-unread{position:absolute;top:-4px;right:-4px;background:var(--red);color:#fff;border-radius:8px;padding:1px 6px;font-size:.6rem;font-weight:700;font-family:var(--mono);border:2px solid var(--bg);min-width:18px;text-align:center;display:none;z-index:2}
+#chat-online-bubble{position:absolute;bottom:-4px;left:-4px;background:var(--green);color:#fff;border-radius:8px;padding:1px 5px;font-size:.58rem;font-weight:700;font-family:var(--mono);border:2px solid var(--bg);min-width:18px;text-align:center;display:none;z-index:2}
 #chat-panel{width:320px;height:480px;background:var(--surface);border:1px solid var(--border2);border-radius:12px;box-shadow:0 8px 40px rgba(0,0,0,.3);display:flex;flex-direction:column;overflow:hidden;animation:chat-in .18s ease;transform-origin:bottom right}
+@keyframes chat-bounce{0%,100%{transform:scale(1)}25%{transform:scale(1.18)}50%{transform:scale(0.95)}75%{transform:scale(1.1)}}
+.chat-btn-bounce{animation:chat-bounce .4s ease!important}
 @keyframes chat-in{from{transform:scale(.9);opacity:0}to{transform:scale(1);opacity:1}}
 #chat-header{padding:11px 14px;background:var(--surface2);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
 #chat-title{font-family:var(--mono);font-size:.8rem;font-weight:700;color:var(--text);display:flex;align-items:center;gap:7px}
@@ -486,7 +488,7 @@ td.rmk{color:var(--text2);font-size:.74rem;max-width:180px;overflow:hidden;text-
       <button id="chat-send" onclick="sendChat()" title="Send">➤</button>
     </div>
   </div>
-  <div style="position:relative">
+  <div style="position:relative;width:50px;height:50px;flex-shrink:0">
     <button id="chat-btn" onclick="toggleChat()" title="Team Chat">💬</button>
     <div id="chat-unread"></div>
     <div id="chat-online-bubble"></div>
@@ -5871,6 +5873,12 @@ async function initChat() {
       const badge = el('chat-unread');
       badge.style.display = '';
       badge.textContent = _chatUnread > 9 ? '9+' : _chatUnread;
+      // Bounce the button to draw attention
+      const btn = el('chat-btn');
+      btn.classList.remove('chat-btn-bounce');
+      void btn.offsetWidth; // force reflow to restart animation
+      btn.classList.add('chat-btn-bounce');
+      setTimeout(() => btn.classList.remove('chat-btn-bounce'), 450);
     }
     if (_chatOpen) scrollChatBottom();
   })
