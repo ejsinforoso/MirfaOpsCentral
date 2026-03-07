@@ -5724,7 +5724,7 @@ function _renderPresence() {
   // Bubble on the chat button
   if (onlineBubble) {
     onlineBubble.textContent = count;
-    onlineBubble.style.display = count > 0 ? '' : 'none';
+    onlineBubble.style.display = count > 0 ? 'block' : 'none';
   }
   if (countEl) countEl.textContent = count;
 
@@ -5871,12 +5871,12 @@ async function initChat() {
     if (!_chatOpen) {
       _chatUnread++;
       const badge = el('chat-unread');
-      badge.style.display = '';
+      badge.style.display = 'block';
       badge.textContent = _chatUnread > 9 ? '9+' : _chatUnread;
       // Bounce the button to draw attention
       const btn = el('chat-btn');
       btn.classList.remove('chat-btn-bounce');
-      void btn.offsetWidth; // force reflow to restart animation
+      void btn.offsetWidth;
       btn.classList.add('chat-btn-bounce');
       setTimeout(() => btn.classList.remove('chat-btn-bounce'), 450);
     }
