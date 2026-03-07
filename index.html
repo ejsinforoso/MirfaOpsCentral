@@ -8,6 +8,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bcryptjs/2.4.3/bcrypt.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.6.0/jspdf.plugin.autotable.min.js"></script>
 <style>
 [data-theme="dark"]{--bg:#0a0c0f;--surface:#111418;--surface2:#181c22;--border:#222830;--border2:#2e3540;--text:#f0f4fa;--text2:#bbc9db;--text3:#8a9ab0;--sh:0 2px 8px rgba(0,0,0,.4)}
 [data-theme="light"]{--bg:#f0f2f5;--surface:#ffffff;--surface2:#f7f8fa;--border:#e2e6ed;--border2:#d0d5de;--text:#0f1623;--text2:#2d3748;--text3:#566070;--sh:0 2px 8px rgba(0,0,0,.07)}
@@ -613,11 +615,19 @@ td.rmk{color:var(--text2);font-size:.74rem;max-width:180px;overflow:hidden;text-
           <button class="ni-child" disabled style="opacity:.45;cursor:default"><span class="nico">📊</span>Daily Report</button>
           <button class="ni-child" disabled style="opacity:.45;cursor:default"><span class="nico">🚚</span>Delivery Tracker</button>
         </div>
+
+        <!-- Logistics dropdown -->
+        <button class="ni-parent" id="nav-logistics" onclick="toggleNavDrop3(event)">
+          <span class="nico">🚛</span>Logistics<span class="ni-arrow" id="nav-drop-arrow3">▼</span>
+        </button>
+        <div class="ni-children" id="nav-children3">
+          <button class="ni-child" id="nav-logistics-home" onclick="go('logistics')"><span class="nico">🏠</span>Home</button>
+        </div>
       </div>
       <div class="ssec hidden" id="admin-nav">
         <div class="sep"></div>
         <div class="slbl">Admin</div>
-        <button class="ni"        id="nav-db"         onclick="go('db')"><span class="nico">🗄️</span>Equipment DB</button>
+        <button class="ni" id="nav-db" onclick="go('db')"><span class="nico">🗄️</span>Equipment DB</button>
         <button class="ni" id="nav-users" onclick="go('users')"><span class="nico">👥</span>Users MGMT<span class="nbadge hidden" id="nav-badge">0</span></button>
       </div>
     </nav>
@@ -743,6 +753,15 @@ td.rmk{color:var(--text2);font-size:.74rem;max-width:180px;overflow:hidden;text-
             <button class="btn bs" onclick="go('miner-form')">⛏️ &nbsp;Replace Miner</button>
             <button class="btn bs" onclick="go('psu-form')">🔋 &nbsp;Replace PSU</button>
             <button class="btn bs" onclick="openEquipUpdate()">🔧 &nbsp;Equipment Update</button>
+          </div>
+        </div>
+
+        <!-- Remote Actions card -->
+        <div class="card" style="margin-bottom:14px">
+          <div class="ch"><div class="ct">Remote Actions</div></div>
+          <div style="display:flex;gap:9px;flex-wrap:wrap;padding:4px 0 6px">
+            <button class="btn bs" onclick="openRemoteModal('pdu')">🔌 &nbsp;Access PDU</button>
+            <button class="btn bs" onclick="openRemoteModal('miner')">⛏️ &nbsp;Access Miners</button>
           </div>
         </div>
 
@@ -1164,6 +1183,34 @@ td.rmk{color:var(--text2);font-size:.74rem;max-width:180px;overflow:hidden;text-
       </div>
 
       <!-- ══ USER GUIDE ══ -->
+      <!-- ══ LOGISTICS ══ -->
+      <div id="page-logistics" class="hidden">
+        <div class="ph">
+          <div class="pt">🚛 Logistics</div>
+          <div class="ps">Material passes and delivery tracking</div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card">
+          <div class="ch"><div class="ct">Quick Actions</div></div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;padding:4px 0 6px">
+            <button class="btn bp" onclick="openMaterialPassModal()" >📋 &nbsp;Record Material Movement</button>
+            <button class="btn bs" onclick="toast('Coming soon — Bitmain Delivery/Repair Tracker','i')" style="opacity:.55;cursor:not-allowed" title="Coming soon" disabled>🚚 &nbsp;Bitmain Delivery/Repair Tracker</button>
+          </div>
+        </div>
+
+        <!-- Logistics History -->
+        <div class="card" style="margin-top:14px">
+          <div class="ch"><div class="ct">Logistics History</div></div>
+          <div class="tw"><table>
+            <thead><tr><th>Pass No.</th><th>Date</th><th>Direction</th><th>Items</th><th>Count</th><th>Destination</th><th>Logged By</th></tr></thead>
+            <tbody id="logistics-history-tbody">
+              <tr class="erow"><td colspan="7"><span>📭</span>No logistics records yet.</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+      </div>
+
       <div id="page-guide" class="hidden">
         <div class="ph">
           <div class="pt">📖 User Guide</div>
@@ -1345,7 +1392,88 @@ td.rmk{color:var(--text2);font-size:.74rem;max-width:180px;overflow:hidden;text-
   </div>
 </div>
 
+<!-- Remote Actions Modal -->
+<div id="modal-remote" class="mo hidden"><div class="md" style="max-width:400px">
+  <div class="mt" id="remote-modal-title">🔌 Access PDU</div>
+  <div style="display:flex;flex-direction:column;gap:12px;margin-top:18px">
+    <div class="fg">
+      <label class="fl">Container</label>
+      <input class="fi" id="remote-container" type="number" min="1" placeholder="e.g. 1"/>
+    </div>
+    <div class="fg">
+      <label class="fl">Tank</label>
+      <input class="fi" id="remote-tank" type="number" min="1" placeholder="e.g. 1"/>
+    </div>
+    <div class="fg" id="remote-pos-wrap" style="display:none">
+      <label class="fl">Miner Position</label>
+      <input class="fi" id="remote-pos" type="number" min="1" placeholder="e.g. 5"/>
+    </div>
+  </div>
+  <div style="margin-top:8px;padding:8px 10px;background:var(--surface2);border-radius:7px;font-size:.78rem;color:var(--text3);font-family:var(--mono)" id="remote-ip-preview">IP: —</div>
+  <div class="ffooter" style="margin-top:16px">
+    <button class="btn bs" onclick="closeModal('modal-remote')">Cancel</button>
+    <button class="btn bp" id="remote-submit-btn" onclick="submitRemote()">Go →</button>
+  </div>
+</div></div>
+
 <!-- ══════════ MODALS ══════════ -->
+
+<!-- Material Pass Modal -->
+<div id="modal-material-pass" class="mo hidden"><div class="md md-lg" style="max-width:860px">
+  <div class="mt">📋 Record Material Movement</div>
+
+  <!-- Header fields -->
+  <div class="fgrid" style="margin-top:16px;margin-bottom:10px">
+    <div class="fg"><label class="fl">Site Location (From)</label><input class="fi" id="mp-from" placeholder="e.g. MIRFA DC"/></div>
+    <div class="fg"><label class="fl">Site Location (To)</label><input class="fi" id="mp-to" placeholder="e.g. MADINAT ZAYED DC"/></div>
+    <div class="fg"><label class="fl">Date</label><input class="fi" type="date" id="mp-date"/></div>
+    <div class="fg"><label class="fl">Material Status</label>
+      <select class="fs" id="mp-direction">
+        <option value="Outward">Outward</option>
+        <option value="Inward">Inward</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Items table -->
+  <div class="fstitle" style="margin-bottom:8px">Items</div>
+  <div id="mp-items-wrap" style="display:flex;flex-direction:column;gap:6px;margin-bottom:8px"></div>
+  <button class="btn bs bsm" onclick="addMpItem()" style="width:100%;border-style:dashed;margin-bottom:14px">＋ Add Item</button>
+
+  <div class="fdiv"></div>
+
+  <!-- Signatory sections -->
+  <div class="fgrid" style="margin-top:12px">
+    <div class="fg fspan2">
+      <div class="fstitle" style="margin-bottom:8px">ZT DC OPS Representative</div>
+      <div class="fgrid">
+        <div class="fg"><label class="fl">Name</label><input class="fi" id="mp-rep-name" placeholder="Full name"/></div>
+        <div class="fg"><label class="fl">Designation</label><input class="fi" id="mp-rep-desig" value="Data Center Technician" readonly style="opacity:.6"/></div>
+        <div class="fg"><label class="fl">Contact #</label><input class="fi" id="mp-rep-contact" placeholder="Contact number"/></div>
+      </div>
+    </div>
+    <div class="fg fspan2">
+      <div class="fstitle" style="margin-bottom:8px">Driver & Vehicle Details</div>
+      <div class="fgrid">
+        <div class="fg"><label class="fl">Driver Name</label><input class="fi" id="mp-driver-name" placeholder="Driver full name"/></div>
+        <div class="fg"><label class="fl">Vehicle No.</label><input class="fi" id="mp-vehicle" placeholder="Plate number"/></div>
+        <div class="fg"><label class="fl">Contact No.</label><input class="fi" id="mp-driver-contact" placeholder="Driver contact"/></div>
+      </div>
+    </div>
+    <div class="fg fspan2">
+      <div class="fstitle" style="margin-bottom:8px">For Security Approval</div>
+      <div class="fgrid">
+        <div class="fg"><label class="fl">Name</label><input class="fi" id="mp-sec-name" placeholder="Security officer name"/></div>
+        <div class="fg"><label class="fl">Date</label><input class="fi" type="date" id="mp-sec-date" readonly style="opacity:.6"/></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ffooter" style="margin-top:18px">
+    <button class="btn bs" onclick="closeModal('modal-material-pass')">Cancel</button>
+    <button class="btn bp" onclick="submitMaterialPass()">✓ Submit &amp; Download PDF</button>
+  </div>
+</div></div>
 
 <!-- Equipment Update Modal -->
 <div id="modal-equip-update" class="mo hidden"><div class="md" style="max-width:520px">
@@ -2237,7 +2365,7 @@ async function submitCheckin() {
 // ══════════════════════════════════════════════
 // NAVIGATION
 // ══════════════════════════════════════════════
-const PAGES = ['homepage','home','bitmain-home','new','my','serial','activities','report','db','db-miners','db-bt-miners','db-psus','users','miner-form','psu-form','guide'];
+const PAGES = ['homepage','home','bitmain-home','new','my','serial','activities','report','db','db-miners','db-bt-miners','db-psus','users','miner-form','psu-form','guide','logistics'];
 const CHILD_PAGES = ['activities','new','my','serial','report','guide'];
 function go(page, sub) {
   el('ndrop')?.classList.add('hidden');
@@ -2252,6 +2380,9 @@ function go(page, sub) {
   } else if (page === 'bitmain-home') {
     el('nav-bitmain')?.classList.add('active');
     el('nav-bitmain-home')?.classList.add('active');
+  } else if (page === 'logistics') {
+    el('nav-logistics')?.classList.add('active');
+    el('nav-logistics-home')?.classList.add('active');
   } else if (page === 'miner-form' || page === 'psu-form') {
     // no nav highlight for form pages
   } else {
@@ -2270,6 +2401,7 @@ function go(page, sub) {
   if (page==='serial')      { set('sl-results',''); el('sl-input').value=''; }
   if (page==='activities')  renderActivities();
   if (page==='report')      renderReport();
+  if (page==='logistics')   renderLogisticsHistory();
   if (page==='db-miners')    renderMinerDB();
   if (page==='db-bt-miners') renderBtMinerDB();
   if (page==='db-psus')      renderPSUDB();
@@ -2300,6 +2432,344 @@ function toggleNavDrop2(e) {
   e.stopPropagation();
   const children = el('nav-children2');
   const arrow    = el('nav-drop-arrow2');
+  const isOpen   = children.classList.contains('open');
+  children.classList.toggle('open', !isOpen);
+  arrow.classList.toggle('open', !isOpen);
+}
+
+// ══════════════════════════════════════════════
+// REMOTE ACTIONS
+// ══════════════════════════════════════════════
+let _remoteMode = 'pdu'; // 'pdu' | 'miner'
+
+function openRemoteModal(mode) {
+  _remoteMode = mode;
+  el('remote-modal-title').textContent = mode === 'pdu' ? '🔌 Access PDU' : '⛏️ Access Miners';
+  el('remote-pos-wrap').style.display  = mode === 'miner' ? '' : 'none';
+  el('remote-container').value = '';
+  el('remote-tank').value      = '';
+  el('remote-pos').value       = '';
+  el('remote-ip-preview').textContent = 'IP: —';
+  openModal('modal-remote');
+
+  // Live IP preview on input
+  ['remote-container','remote-tank','remote-pos'].forEach(id => {
+    el(id).oninput = updateRemotePreview;
+  });
+}
+
+function updateRemotePreview() {
+  const c = el('remote-container').value.trim();
+  const t = el('remote-tank').value.trim();
+  const p = el('remote-pos').value.trim();
+  if (_remoteMode === 'pdu') {
+    el('remote-ip-preview').textContent = (c && t) ? `IP: 10.${c}.${t}.20` : 'IP: —';
+  } else {
+    el('remote-ip-preview').textContent = (c && t && p) ? `IP: 10.${c}.${t}.${p}` : 'IP: —';
+  }
+}
+
+function submitRemote() {
+  const c = el('remote-container').value.trim();
+  const t = el('remote-tank').value.trim();
+  const p = el('remote-pos').value.trim();
+  if (!c || !t) { toast('Enter Container and Tank.', 'e'); return; }
+  if (_remoteMode === 'miner' && !p) { toast('Enter Miner Position.', 'e'); return; }
+  const ip = _remoteMode === 'pdu' ? `10.${c}.${t}.20` : `10.${c}.${t}.${p}`;
+  closeModal('modal-remote');
+  window.open(`http://${ip}`, '_blank');
+}
+
+// ══════════════════════════════════════════════
+// MATERIAL PASS
+// ══════════════════════════════════════════════
+let _mpItemCount = 0;
+let _mpPassCounter = null; // loaded from DB
+
+async function openMaterialPassModal() {
+  _mpItemCount = 0;
+  el('mp-items-wrap').innerHTML = '';
+  // Set today's date
+  const today = new Date().toISOString().split('T')[0];
+  el('mp-date').value = today;
+  el('mp-sec-date').value = today;
+  // Pre-fill rep name from logged-in user
+  el('mp-rep-name').value = CU.first_name + ' ' + CU.last_name;
+  // Clear other fields
+  ['mp-from','mp-to','mp-driver-name','mp-vehicle','mp-driver-contact','mp-sec-name'].forEach(id => {
+    const e = el(id); if (e && !e.readOnly) e.value = '';
+  });
+  el('mp-direction').value = 'Outward';
+  addMpItem();
+  addMpItem();
+  addMpItem();
+  openModal('modal-material-pass');
+}
+
+function addMpItem() {
+  _mpItemCount++;
+  const idx = _mpItemCount;
+  const row = document.createElement('div');
+  row.id = `mp-item-${idx}`;
+  row.style.cssText = 'display:grid;grid-template-columns:40px 1fr 2fr 2fr 1fr 80px 36px;gap:6px;align-items:center';
+  row.innerHTML = `
+    <span style="font-size:.75rem;color:var(--text3);font-family:var(--mono);text-align:center">${idx}</span>
+    <input class="fi" id="mp-serial-${idx}" placeholder="Serial No." style="font-size:.78rem;padding:5px 8px"/>
+    <input class="fi" id="mp-desc-${idx}"   placeholder="Description" style="font-size:.78rem;padding:5px 8px"/>
+    <input class="fi" id="mp-logs-${idx}"   placeholder="Logs" style="font-size:.78rem;padding:5px 8px"/>
+    <input class="fi" id="mp-dest-${idx}"   placeholder="Destination" style="font-size:.78rem;padding:5px 8px"/>
+    <input class="fi" id="mp-qty-${idx}"    placeholder="QTY" type="number" min="1" style="font-size:.78rem;padding:5px 8px"/>
+    ${idx > 1 ? `<button onclick="el('mp-item-${idx}').remove()" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:1rem;padding:0">✕</button>` : '<span></span>'}`;
+  el('mp-items-wrap').appendChild(row);
+}
+
+// Column header row above items
+function ensureMpHeader() {
+  if (!el('mp-items-header')) {
+    const hdr = document.createElement('div');
+    hdr.id = 'mp-items-header';
+    hdr.style.cssText = 'display:grid;grid-template-columns:40px 1fr 2fr 2fr 1fr 80px 36px;gap:6px;margin-bottom:2px';
+    hdr.innerHTML = ['#','Serial No.','Description','Logs','Destination','QTY','']
+      .map(t=>`<span style="font-size:.68rem;color:var(--text3);font-weight:600;font-family:var(--mono)">${t}</span>`).join('');
+    el('mp-items-wrap').before(hdr);
+  }
+}
+
+async function submitMaterialPass() {
+  const from      = v('mp-from').trim();
+  const to        = v('mp-to').trim();
+  const date      = el('mp-date').value;
+  const direction = el('mp-direction').value;
+  const repName   = v('mp-rep-name').trim();
+  const repContact= v('mp-rep-contact').trim();
+  const driverName= v('mp-driver-name').trim();
+  const vehicle   = v('mp-vehicle').trim();
+  const driverContact = v('mp-driver-contact').trim();
+  const secName   = v('mp-sec-name').trim();
+  const secDate   = el('mp-sec-date').value;
+
+  if (!from||!to||!date) { toast('Fill in Site Locations and Date.','e'); return; }
+
+  // Collect items
+  const items = [];
+  el('mp-items-wrap').querySelectorAll('[id^="mp-item-"]').forEach(row => {
+    const idx = row.id.replace('mp-item-','');
+    const serial = v(`mp-serial-${idx}`)||'';
+    const desc   = v(`mp-desc-${idx}`)||'';
+    const logs   = v(`mp-logs-${idx}`)||'';
+    const dest   = v(`mp-dest-${idx}`)||'';
+    const qty    = v(`mp-qty-${idx}`)||'';
+    if (desc || serial) items.push({ serial, desc, logs, dest, qty });
+  });
+  if (!items.length) { toast('Add at least one item.','e'); return; }
+
+  showLoading('Saving & generating PDF…');
+
+  // Generate pass number: MP-YYYYMMDD-NNN
+  const dateStr = date.replace(/-/g,'');
+  const { count } = await sb.from('material_passes').select('id', { count:'exact', head:true })
+    .gte('created_at', date + 'T00:00:00').lte('created_at', date + 'T23:59:59');
+  const passNum = `MP-${dateStr}-${String((count||0)+1).padStart(3,'0')}`;
+
+  // Save to DB
+  const op = CU.first_name+' '+CU.last_name;
+  const { error } = await sb.from('material_passes').insert({
+    pass_number: passNum,
+    direction,
+    site_from: from,
+    site_to: to,
+    pass_date: date,
+    items: JSON.stringify(items),
+    item_count: items.reduce((s,r)=>s+(parseInt(r.qty)||0),0),
+    rep_name: repName,
+    rep_contact: repContact,
+    driver_name: driverName,
+    vehicle_no: vehicle,
+    driver_contact: driverContact,
+    sec_name: secName,
+    logged_by: op,
+    logged_by_id: /^[0-9a-f-]{36}$/i.test(CU.id) ? CU.id : null,
+    created_at: now()
+  });
+
+  hideLoading();
+  if (error) { toast('Error saving pass: '+error.message,'e'); return; }
+
+  // Generate PDF
+  generateMaterialPassPDF({ passNum, from, to, date, direction, items,
+    repName, repContact, driverName, vehicle, driverContact, secName, secDate });
+
+  closeModal('modal-material-pass');
+  toast(`✅ ${passNum} saved & downloaded!`,'s');
+  renderLogisticsHistory();
+}
+
+function generateMaterialPassPDF(d) {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation:'landscape', unit:'mm', format:'a4' });
+  const W = 297, H = 210;
+  const M = 10; // margin
+
+  // ── Header ──
+  doc.setFontSize(16);
+  doc.setFont('helvetica','bold');
+  doc.text('Zero-Two Western Region', W/2, M+8, { align:'center' });
+  doc.setFontSize(10);
+  doc.setFont('helvetica','normal');
+  doc.text('MATERIAL GATEPASS', W/2, M+14, { align:'center' });
+
+  // Pass No. and Date — top right
+  doc.setFontSize(8);
+  doc.setFont('helvetica','bold');
+  doc.text('Pass No.:', W-M-55, M+6);
+  doc.setFont('helvetica','normal');
+  doc.text(d.passNum, W-M-38, M+6);
+  doc.setFont('helvetica','bold');
+  doc.text('Date:', W-M-55, M+11);
+  doc.setFont('helvetica','normal');
+  doc.text(d.date, W-M-38, M+11);
+
+  // Border
+  doc.setLineWidth(0.5);
+  doc.rect(M, M, W-M*2, H-M*2);
+
+  // Site info row
+  let y = M + 20;
+  doc.setFontSize(8);
+  doc.setFont('helvetica','bold');
+  doc.text('SITE LOCATION (From):', M+4, y);
+  doc.setFont('helvetica','normal');
+  doc.text(d.from, M+45, y);
+  doc.setFont('helvetica','bold');
+  doc.text('Site Details:', W/2+4, y);
+  doc.setFont('helvetica','normal');
+  doc.text('MIRFA WESTERN REGION', W/2+24, y);
+
+  y += 6;
+  doc.setFont('helvetica','bold');
+  doc.text('SITE LOCATION (To):', M+4, y);
+  doc.setFont('helvetica','normal');
+  doc.text(d.to, M+45, y);
+
+  // Material Status
+  y += 6;
+  doc.setFont('helvetica','bold');
+  doc.text('Material Status:', M+4, y);
+  doc.setFont('helvetica','normal');
+  doc.text(d.direction, M+36, y);
+
+  // Items table
+  y += 4;
+  const tableRows = d.items.map((item, i) => [
+    i+1, item.serial||'', item.desc||'', item.logs||'', item.dest||'', item.qty||''
+  ]);
+  // Pad to at least 15 rows for blank lines
+  while (tableRows.length < 15) tableRows.push(['','','','','','']);
+
+  // Totals row
+  const totalQty = d.items.reduce((s,r)=>s+(parseInt(r.qty)||0),0);
+
+  doc.autoTable({
+    startY: y,
+    head: [['Item No.','Serial No.','Description','Logs','Destination Remarks','QTY']],
+    body: tableRows,
+    foot: [['','','','Grand Total:','', totalQty]],
+    margin: { left: M+1, right: M+1 },
+    styles: { fontSize: 7, cellPadding: 1.5, lineColor: [0,0,0], lineWidth: 0.1 },
+    headStyles: { fillColor: [255,255,255], textColor: [0,0,0], fontStyle:'bold', halign:'center' },
+    footStyles: { fillColor: [255,255,255], textColor: [0,0,0], fontStyle:'bold' },
+    columnStyles: {
+      0: { cellWidth: 14,  halign:'center' },
+      1: { cellWidth: 38 },
+      2: { cellWidth: 70 },
+      3: { cellWidth: 70 },
+      4: { cellWidth: 65 },
+      5: { cellWidth: 20,  halign:'center' },
+    },
+    tableLineColor: [0,0,0],
+    tableLineWidth: 0.1,
+  });
+
+  // Signatory section
+  const sigY = doc.lastAutoTable.finalY + 4;
+  const col1 = M+1, col2 = W/3, col3 = W*2/3;
+  const boxH = 22;
+
+  // Draw 3 signatory boxes
+  doc.setLineWidth(0.2);
+  doc.rect(col1,   sigY, col2-col1-2,   boxH);
+  doc.rect(col2,   sigY, col3-col2-2,   boxH);
+  doc.rect(col3,   sigY, W-M-1-col3,    boxH);
+
+  doc.setFontSize(7);
+  doc.setFont('helvetica','bold');
+  doc.text('ZT DC OPS Representative', col1+2,   sigY+4);
+  doc.text('Driver & Vehicle Details',  col2+2,   sigY+4);
+  doc.text('For Security Approval',     col3+2,   sigY+4);
+
+  doc.setFont('helvetica','normal');
+  // Col 1
+  doc.text('Name: '        + d.repName,                   col1+2, sigY+9);
+  doc.text('Designation: Data Center Technician',          col1+2, sigY+13);
+  doc.text('Contact #: '   + d.repContact,                col1+2, sigY+17);
+  // Col 2
+  doc.text('Driver Name: ' + d.driverName,                col2+2, sigY+9);
+  doc.text('Vehicle No: '  + d.vehicle,                   col2+2, sigY+13);
+  doc.text('Contact No: '  + d.driverContact,             col2+2, sigY+17);
+  // Col 3
+  doc.text('Name: '        + d.secName,                   col3+2, sigY+9);
+  doc.text('Date: '        + d.secDate,                   col3+2, sigY+13);
+  doc.text('Sign: ___________________________',            col3+2, sigY+18);
+
+  doc.save(`${d.passNum}.pdf`);
+}
+
+let _lhPage = 0;
+const LH_PAGE_SIZE = 50;
+
+async function renderLogisticsHistory() {
+  const tbody = el('logistics-history-tbody');
+  if (!tbody) return;
+  tbody.innerHTML = '<tr class="erow"><td colspan="7"><span>⏳</span>Loading…</td></tr>';
+
+  const from = _lhPage * LH_PAGE_SIZE;
+  const to   = from + LH_PAGE_SIZE - 1;
+  const { data, error } = await sb.from('material_passes')
+    .select('pass_number,pass_date,direction,items,item_count,site_to,logged_by,created_at')
+    .order('created_at', { ascending: false })
+    .range(from, to);
+
+  if (error || !data || !data.length) {
+    tbody.innerHTML = '<tr class="erow"><td colspan="7"><span>📭</span>No logistics records yet.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = data.map(r => {
+    let itemSummary = '—';
+    try {
+      const items = JSON.parse(r.items || '[]');
+      const descs = [...new Set(items.map(i=>i.desc).filter(Boolean))];
+      itemSummary = descs.slice(0,2).join(', ') + (descs.length > 2 ? ` +${descs.length-2} more` : '');
+    } catch(e) {}
+    const dirBadge = r.direction === 'Inward'
+      ? `<span class="badge" style="background:rgba(0,200,83,.15);color:var(--green);border-color:rgba(0,200,83,.3)">Inward</span>`
+      : `<span class="badge" style="background:rgba(0,184,217,.15);color:var(--accent);border-color:rgba(0,184,217,.3)">Outward</span>`;
+    return `<tr>
+      <td style="font-family:var(--mono);font-size:.78rem;font-weight:600;color:var(--accent)">${esc(r.pass_number)}</td>
+      <td style="color:var(--text3);font-size:.78rem">${r.pass_date||'—'}</td>
+      <td>${dirBadge}</td>
+      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(itemSummary)}">${esc(itemSummary)}</td>
+      <td style="font-family:var(--mono);font-size:.78rem">${r.item_count||0}</td>
+      <td class="hi">${esc(r.site_to)||'—'}</td>
+      <td class="hi">${esc(r.logged_by)||'—'}</td>
+    </tr>`;
+  }).join('');
+}
+
+function toggleNavDrop3(e) {
+  e.stopPropagation();
+  const children = el('nav-children3');
+  const arrow    = el('nav-drop-arrow3');
   const isOpen   = children.classList.contains('open');
   children.classList.toggle('open', !isOpen);
   arrow.classList.toggle('open', !isOpen);
