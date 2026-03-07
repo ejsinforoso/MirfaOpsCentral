@@ -1579,19 +1579,27 @@ async function doLogin() {
   if (data.status === 'pending')   { setS(data); showScreen('awaiting'); return; }
   if (data.status === 'suspended') { toast('Account suspended. Contact admin.', 'e'); return; }
 
-  // Check if user is already on a team in the current shift — restore activeShift
+  // Check if user is already on a team in the CURRENT active shift — restore activeShift
   let activeShift = '';
   try {
     const { data: shiftRow } = await sb.from('shift_info')
-      .select('shift, miner_team')
+      .select('shift, miner_team, created_at')
       .order('created_at', { ascending: false })
       .limit(1)
       .single();
     if (shiftRow && shiftRow.miner_team) {
-      const firstName = data.first_name || '';
-      const teamNames = shiftRow.miner_team.split(/[,،\-–—\/]/).map(s => s.trim()).filter(Boolean);
-      const onTeam = teamNames.some(n => n.toLowerCase().includes(firstName.toLowerCase()));
-      if (onTeam) activeShift = shiftRow.shift || '';
+      // Only restore if the shift record belongs to the currently active shift window
+      const recordShift = shiftRow.shift || '';
+      const { start, end } = getShiftWindow(recordShift);
+      const recordTime = new Date(shiftRow.created_at);
+      const now = new Date();
+      const isCurrentShift = start && end && recordTime >= start && now <= end;
+      if (isCurrentShift) {
+        const firstName = data.first_name || '';
+        const teamNames = shiftRow.miner_team.split(/[,،\-–—\/]/).map(s => s.trim()).filter(Boolean);
+        const onTeam = teamNames.some(n => n.toLowerCase().includes(firstName.toLowerCase()));
+        if (onTeam) activeShift = recordShift;
+      }
     }
   } catch (e) { /* non-critical — leave activeShift blank */ }
 
