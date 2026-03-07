@@ -1392,6 +1392,16 @@ td.rmk{color:var(--text2);font-size:.74rem;max-width:180px;overflow:hidden;text-
   </div>
 </div>
 
+<!-- Pass Detail Modal -->
+<div id="modal-pass-detail" class="mo hidden"><div class="md md-lg" style="max-width:900px">
+  <div class="mt" id="pass-detail-title">📋 Pass Details</div>
+  <div id="pass-detail-body" style="margin-top:16px"></div>
+  <div class="ffooter" style="margin-top:18px">
+    <button class="btn bs" onclick="closeModal('modal-pass-detail')">Close</button>
+    <button class="btn bp" onclick="redownloadPass()">⬇ Re-download PDF</button>
+  </div>
+</div></div>
+
 <!-- Remote Actions Modal -->
 <div id="modal-remote" class="mo hidden"><div class="md" style="max-width:400px">
   <div class="mt" id="remote-modal-title">🔌 Access PDU</div>
@@ -2676,53 +2686,58 @@ function generateMaterialPassPDF(d) {
     startY: y,
     head: [['Item No.','Serial No.','Description','Logs','Destination Remarks','QTY']],
     body: tableRows,
-    foot: [['','','','Grand Total:','', totalQty]],
-    margin: { left: M+1, right: M+1 },
+    foot: [['','','','','Grand Total:', totalQty]],
+    margin: { left: M, right: M },
+    tableWidth: W - M*2,
     styles: { fontSize: 7, cellPadding: 1.5, lineColor: [0,0,0], lineWidth: 0.1 },
     headStyles: { fillColor: [255,255,255], textColor: [0,0,0], fontStyle:'bold', halign:'center' },
     footStyles: { fillColor: [255,255,255], textColor: [0,0,0], fontStyle:'bold' },
     columnStyles: {
       0: { cellWidth: 14,  halign:'center' },
       1: { cellWidth: 38 },
-      2: { cellWidth: 70 },
-      3: { cellWidth: 70 },
-      4: { cellWidth: 65 },
+      2: { cellWidth: 'auto' },
+      3: { cellWidth: 'auto' },
+      4: { cellWidth: 60 },
       5: { cellWidth: 20,  halign:'center' },
     },
     tableLineColor: [0,0,0],
     tableLineWidth: 0.1,
   });
 
-  // Signatory section
+  // Signatory section — flush with outer border
   const sigY = doc.lastAutoTable.finalY + 4;
-  const col1 = M+1, col2 = W/3, col3 = W*2/3;
-  const boxH = 22;
+  const totalW = W - M*2;
+  const colW   = totalW / 3;
+  const col1   = M;
+  const col2   = M + colW;
+  const col3   = M + colW*2;
+  const boxH   = 22;
 
-  // Draw 3 signatory boxes
+  // Draw 3 signatory boxes — perfectly tiled, total width = outer border width
   doc.setLineWidth(0.2);
-  doc.rect(col1,   sigY, col2-col1-2,   boxH);
-  doc.rect(col2,   sigY, col3-col2-2,   boxH);
-  doc.rect(col3,   sigY, W-M-1-col3,    boxH);
+  doc.rect(col1, sigY, colW, boxH);
+  doc.rect(col2, sigY, colW, boxH);
+  doc.rect(col3, sigY, colW, boxH);
 
   doc.setFontSize(7);
   doc.setFont('helvetica','bold');
-  doc.text('ZT DC OPS Representative', col1+2,   sigY+4);
-  doc.text('Driver & Vehicle Details',  col2+2,   sigY+4);
-  doc.text('For Security Approval',     col3+2,   sigY+4);
+  doc.text('ZT DC OPS Representative', col1+2, sigY+4);
+  doc.text('Driver & Vehicle Details',  col2+2, sigY+4);
+  doc.text('For Security Approval',     col3+2, sigY+4);
 
   doc.setFont('helvetica','normal');
   // Col 1
-  doc.text('Name: '        + d.repName,                   col1+2, sigY+9);
-  doc.text('Designation: Data Center Technician',          col1+2, sigY+13);
-  doc.text('Contact #: '   + d.repContact,                col1+2, sigY+17);
+  doc.text('Name: '        + d.repName,                  col1+2, sigY+9);
+  doc.text('Designation: Data Center Technician',         col1+2, sigY+13);
+  doc.text('Contact #: '   + d.repContact,               col1+2, sigY+17);
   // Col 2
-  doc.text('Driver Name: ' + d.driverName,                col2+2, sigY+9);
-  doc.text('Vehicle No: '  + d.vehicle,                   col2+2, sigY+13);
-  doc.text('Contact No: '  + d.driverContact,             col2+2, sigY+17);
+  doc.text('Driver Name: ' + d.driverName,               col2+2, sigY+9);
+  doc.text('Vehicle No: '  + d.vehicle,                  col2+2, sigY+13);
+  doc.text('Contact No: '  + d.driverContact,            col2+2, sigY+17);
   // Col 3
-  doc.text('Name: '        + d.secName,                   col3+2, sigY+9);
-  doc.text('Date: '        + d.secDate,                   col3+2, sigY+13);
-  doc.text('Sign: ___________________________',            col3+2, sigY+18);
+  doc.text('Name: '        + d.secName,                  col3+2, sigY+9);
+  doc.text('Date: '        + d.secDate,                  col3+2, sigY+13);
+  doc.text('Sign: ___________________________',           col3+2, sigY+18);
 
   doc.save(`${d.passNum}.pdf`);
 }
@@ -2738,7 +2753,7 @@ async function renderLogisticsHistory() {
   const from = _lhPage * LH_PAGE_SIZE;
   const to   = from + LH_PAGE_SIZE - 1;
   const { data, error } = await sb.from('material_passes')
-    .select('pass_number,pass_date,direction,items,item_count,site_to,logged_by,created_at')
+    .select('*')
     .order('created_at', { ascending: false })
     .range(from, to);
 
@@ -2746,6 +2761,9 @@ async function renderLogisticsHistory() {
     tbody.innerHTML = '<tr class="erow"><td colspan="7"><span>📭</span>No logistics records yet.</td></tr>';
     return;
   }
+
+  // Store for detail lookup
+  window._mpCache = data;
 
   tbody.innerHTML = data.map(r => {
     let itemSummary = '—';
@@ -2757,7 +2775,7 @@ async function renderLogisticsHistory() {
     const dirBadge = r.direction === 'Inward'
       ? `<span class="badge" style="background:rgba(0,200,83,.15);color:var(--green);border-color:rgba(0,200,83,.3)">Inward</span>`
       : `<span class="badge" style="background:rgba(0,184,217,.15);color:var(--accent);border-color:rgba(0,184,217,.3)">Outward</span>`;
-    return `<tr>
+    return `<tr style="cursor:pointer" onclick="openPassDetail('${esc(r.pass_number)}')" title="View details">
       <td style="font-family:var(--mono);font-size:.78rem;font-weight:600;color:var(--accent)">${esc(r.pass_number)}</td>
       <td style="color:var(--text3);font-size:.78rem">${r.pass_date||'—'}</td>
       <td>${dirBadge}</td>
@@ -2767,6 +2785,101 @@ async function renderLogisticsHistory() {
       <td class="hi">${esc(r.logged_by)||'—'}</td>
     </tr>`;
   }).join('');
+}
+
+function openPassDetail(passNumber) {
+  const r = (window._mpCache || []).find(p => p.pass_number === passNumber);
+  if (!r) { toast('Pass not found.','e'); return; }
+
+  let items = [];
+  try { items = JSON.parse(r.items || '[]'); } catch(e) {}
+
+  const dirBadge = r.direction === 'Inward'
+    ? `<span class="badge" style="background:rgba(0,200,83,.15);color:var(--green);border-color:rgba(0,200,83,.3)">Inward</span>`
+    : `<span class="badge" style="background:rgba(0,184,217,.15);color:var(--accent);border-color:rgba(0,184,217,.3)">Outward</span>`;
+
+  const itemRows = items.length ? items.map((it, i) => `
+    <tr>
+      <td style="font-family:var(--mono);font-size:.75rem;text-align:center;color:var(--text3)">${i+1}</td>
+      <td style="font-family:var(--mono);font-size:.75rem">${esc(it.serial)||'—'}</td>
+      <td>${esc(it.desc)||'—'}</td>
+      <td style="color:var(--text3)">${esc(it.logs)||'—'}</td>
+      <td>${esc(it.dest)||'—'}</td>
+      <td style="font-family:var(--mono);font-size:.75rem;text-align:center;font-weight:600">${esc(it.qty)||'—'}</td>
+    </tr>`).join('')
+  : `<tr class="erow"><td colspan="6">No items recorded.</td></tr>`;
+
+  const totalQty = items.reduce((s,it) => s+(parseInt(it.qty)||0), 0);
+
+  el('pass-detail-body').innerHTML = `
+    <!-- Header info -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
+      <div class="card" style="margin:0;padding:12px 14px">
+        <div style="font-size:.68rem;color:var(--text3);font-weight:600;letter-spacing:.06em;margin-bottom:6px">PASS DETAILS</div>
+        <div style="font-size:1rem;font-weight:700;font-family:var(--mono);color:var(--accent);margin-bottom:4px">${esc(r.pass_number)}</div>
+        <div style="font-size:.8rem;color:var(--text2);margin-bottom:4px">Date: <strong>${r.pass_date||'—'}</strong></div>
+        <div style="display:flex;align-items:center;gap:6px;font-size:.8rem;color:var(--text2)">Direction: ${dirBadge}</div>
+      </div>
+      <div class="card" style="margin:0;padding:12px 14px">
+        <div style="font-size:.68rem;color:var(--text3);font-weight:600;letter-spacing:.06em;margin-bottom:6px">MOVEMENT</div>
+        <div style="font-size:.8rem;color:var(--text2);margin-bottom:4px">From: <strong>${esc(r.site_from)||'—'}</strong></div>
+        <div style="font-size:.8rem;color:var(--text2);margin-bottom:4px">To: <strong>${esc(r.site_to)||'—'}</strong></div>
+        <div style="font-size:.8rem;color:var(--text3)">Logged by: ${esc(r.logged_by)||'—'}</div>
+      </div>
+    </div>
+
+    <!-- Items table -->
+    <div style="font-size:.72rem;font-weight:700;color:var(--text3);letter-spacing:.06em;margin-bottom:6px">ITEMS</div>
+    <div class="tw" style="margin-bottom:16px"><table>
+      <thead><tr><th>#</th><th>Serial No.</th><th>Description</th><th>Logs</th><th>Destination</th><th>QTY</th></tr></thead>
+      <tbody>${itemRows}</tbody>
+      <tfoot><tr>
+        <td colspan="5" style="text-align:right;font-weight:700;font-size:.78rem;padding-right:10px">Grand Total:</td>
+        <td style="font-family:var(--mono);font-weight:700;font-size:.82rem;text-align:center">${totalQty}</td>
+      </tr></tfoot>
+    </table></div>
+
+    <!-- Signatories -->
+    <div style="font-size:.72rem;font-weight:700;color:var(--text3);letter-spacing:.06em;margin-bottom:6px">SIGNATORIES</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+      <div class="card" style="margin:0;padding:12px 14px">
+        <div style="font-size:.7rem;font-weight:700;color:var(--text2);margin-bottom:6px">ZT DC OPS Representative</div>
+        <div style="font-size:.78rem;color:var(--text2);margin-bottom:3px">Name: <strong>${esc(r.rep_name)||'—'}</strong></div>
+        <div style="font-size:.78rem;color:var(--text3);margin-bottom:3px">Designation: Data Center Technician</div>
+        <div style="font-size:.78rem;color:var(--text3)">Contact: ${esc(r.rep_contact)||'—'}</div>
+      </div>
+      <div class="card" style="margin:0;padding:12px 14px">
+        <div style="font-size:.7rem;font-weight:700;color:var(--text2);margin-bottom:6px">Driver & Vehicle Details</div>
+        <div style="font-size:.78rem;color:var(--text2);margin-bottom:3px">Driver: <strong>${esc(r.driver_name)||'—'}</strong></div>
+        <div style="font-size:.78rem;color:var(--text3);margin-bottom:3px">Vehicle No: ${esc(r.vehicle_no)||'—'}</div>
+        <div style="font-size:.78rem;color:var(--text3)">Contact: ${esc(r.driver_contact)||'—'}</div>
+      </div>
+      <div class="card" style="margin:0;padding:12px 14px">
+        <div style="font-size:.7rem;font-weight:700;color:var(--text2);margin-bottom:6px">For Security Approval</div>
+        <div style="font-size:.78rem;color:var(--text2);margin-bottom:3px">Name: <strong>${esc(r.sec_name)||'—'}</strong></div>
+        <div style="font-size:.78rem;color:var(--text3)">Date: ${r.pass_date||'—'}</div>
+      </div>
+    </div>`;
+
+  el('pass-detail-title').textContent = `📋 ${r.pass_number}`;
+  // Store current pass for re-download
+  window._currentPassDetail = r;
+  openModal('modal-pass-detail');
+}
+
+function redownloadPass() {
+  const r = window._currentPassDetail;
+  if (!r) return;
+  let items = [];
+  try { items = JSON.parse(r.items || '[]'); } catch(e) {}
+  generateMaterialPassPDF({
+    passNum: r.pass_number, from: r.site_from, to: r.site_to,
+    date: r.pass_date, direction: r.direction, items,
+    repName: r.rep_name||'', repContact: r.rep_contact||'',
+    driverName: r.driver_name||'', vehicle: r.vehicle_no||'',
+    driverContact: r.driver_contact||'', secName: r.sec_name||'',
+    secDate: r.pass_date||''
+  });
 }
 
 function toggleNavDrop3(e) {
