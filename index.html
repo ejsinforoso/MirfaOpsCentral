@@ -139,6 +139,22 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:1
 /* STATUS OVERVIEW CHART */
 .status-overview{background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:18px;margin-bottom:14px;box-shadow:var(--sh)}
 .so-title{font-size:.86rem;font-weight:600;font-family:var(--mono);color:var(--text);margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
+.guide-body{display:flex;flex-direction:column;gap:14px;padding:4px 0}
+.guide-intro{font-size:.85rem;color:var(--text2);line-height:1.6;margin:0}
+.guide-step{display:flex;gap:14px;align-items:flex-start;font-size:.84rem;color:var(--text);line-height:1.6}
+.guide-num{min-width:24px;height:24px;border-radius:50%;background:var(--accent);color:#000;font-weight:700;font-size:.72rem;display:flex;align-items:center;justify-content:center;margin-top:1px;flex-shrink:0}
+.guide-tag{display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:1px 7px;font-size:.75rem;font-family:var(--mono);color:var(--accent);white-space:nowrap}
+.guide-warn{color:var(--yellow);font-size:.8rem}
+.guide-note{background:rgba(0,184,217,.07);border-left:3px solid var(--accent);border-radius:0 6px 6px 0;padding:10px 14px;font-size:.81rem;color:var(--text2);line-height:1.6}
+.guide-divider{border:none;border-top:1px solid var(--border);margin:4px 0}
+.guide-subtitle{font-size:.78rem;font-weight:700;color:var(--text2);letter-spacing:.06em;text-transform:uppercase;font-family:var(--mono)}
+.guide-table-wrap{overflow-x:auto}
+.guide-table{width:100%;border-collapse:collapse;font-size:.82rem}
+.guide-table th{text-align:left;padding:8px 12px;font-size:.72rem;color:var(--text3);font-weight:600;letter-spacing:.05em;border-bottom:1px solid var(--border);font-family:var(--mono)}
+.guide-table td{padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text);vertical-align:top;line-height:1.5}
+.guide-table tr:last-child td{border-bottom:none}
+.guide-table tr:hover td{background:var(--surface2)}
+.guide-tab-btn.active{background:var(--accent)!important;color:#000!important;border-color:var(--accent)!important}
 .so-bars{display:flex;flex-direction:column;gap:9px}
 .so-row{display:flex;align-items:center;gap:10px}
 .so-row-click{cursor:pointer;border-radius:var(--r);padding:4px 6px;margin:0 -6px;transition:var(--t)}
@@ -581,6 +597,7 @@ td.rmk{color:var(--text2);font-size:.74rem;max-width:180px;overflow:hidden;text-
           <button class="ni-child" id="nav-my"          onclick="go('my')"><span class="nico">📋</span>My History</button>
           <button class="ni-child" id="nav-serial"      onclick="go('serial')"><span class="nico">🔍</span>Serial Search</button>
           <button class="ni-child" id="nav-report"      onclick="go('report')"><span class="nico">📊</span>Daily Report</button>
+          <button class="ni-child" id="nav-guide"       onclick="go('guide')"><span class="nico">📖</span>User Guide</button>
         </div>
 
         <!-- Bitmain Data dropdown -->
@@ -1146,6 +1163,184 @@ td.rmk{color:var(--text2);font-size:.74rem;max-width:180px;overflow:hidden;text-
         </div>
       </div>
 
+      <!-- ══ USER GUIDE ══ -->
+      <div id="page-guide" class="hidden">
+        <div class="ph">
+          <div class="pt">📖 User Guide</div>
+          <div class="ps">Operations reference — how to use each feature</div>
+        </div>
+
+        <!-- Guide nav tabs -->
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px" id="guide-tabs">
+          <button class="btn bp bsm guide-tab-btn active" onclick="showGuideTab('add-activity')">⚙️ Adding Activities</button>
+          <button class="btn bs bsm guide-tab-btn" onclick="showGuideTab('replace-miner')">⛏️ Replacing Miners</button>
+          <button class="btn bs bsm guide-tab-btn" onclick="showGuideTab('replace-psu')">🔋 Replacing PSUs</button>
+          <button class="btn bs bsm guide-tab-btn" onclick="showGuideTab('equip-update')">🔧 Equipment Update</button>
+          <button class="btn bs bsm guide-tab-btn" onclick="showGuideTab('serial-hist')">🔍 Serial History</button>
+          <button class="btn bs bsm guide-tab-btn" onclick="showGuideTab('act-hist')">📋 Activities History</button>
+        </div>
+
+        <!-- ── Adding Activities ── -->
+        <div class="guide-section" id="guide-add-activity">
+          <div class="card">
+            <div class="ch"><div class="ct">⚙️ Adding Activities</div></div>
+            <div class="guide-body">
+              <p class="guide-intro">Use this to log any maintenance or troubleshooting action performed on a miner. Both Admin and User can log activities freely.</p>
+
+              <div class="guide-step"><span class="guide-num">1</span><div><strong>Open the form</strong> — Click the <span class="guide-tag">⚙️ Record Activity</span> button on the Submer Data Home page.</div></div>
+              <div class="guide-step"><span class="guide-num">2</span><div><strong>Select the Activity Type</strong> — Choose the type that best matches what was done. See the reference table below for descriptions.</div></div>
+              <div class="guide-step"><span class="guide-num">3</span><div><strong>Fill in the details</strong> — Enter the miner IP address, diagnosis of the issue, remarks or actions taken, and the technician who performed the work.</div></div>
+              <div class="guide-step"><span class="guide-num">4</span><div><strong>Submit</strong> — Click <span class="guide-tag">Submit</span>. The activity will be logged under your shift and visible in Activities History immediately.</div></div>
+
+              <div class="guide-divider"></div>
+              <div class="guide-subtitle">Activity Type Reference</div>
+
+              <div class="guide-table-wrap"><table class="guide-table">
+                <thead><tr><th>Activity Type</th><th>When to use it</th></tr></thead>
+                <tbody>
+                  <tr><td><span class="guide-tag">Miner Reboot</span></td><td>Any activity involving rebooting or restarting a miner.</td></tr>
+                  <tr><td><span class="guide-tag">Offline Troubleshooting</span></td><td>Fuse replacements, burnt cable replacements, or miners going offline.</td></tr>
+                  <tr><td><span class="guide-tag">CB Replacement</span></td><td>Control board replacement on any Antminer or Avalon unit.</td></tr>
+                  <tr><td><span class="guide-tag">Power Cable Replacement</span></td><td>Preventive maintenance — replacing burnt power cables.</td></tr>
+                  <tr><td><span class="guide-tag">4-pin Replace/Replug</span></td><td>Any activity where a 4-pin connector was found faulty and replaced or replugged.</td></tr>
+                  <tr><td><span class="guide-tag">6-pin Replace/Replug</span></td><td>Any activity where a 6-pin connector was found faulty and replaced or replugged.</td></tr>
+                  <tr><td><span class="guide-tag">Hashboard Tightening</span></td><td>Loose screws or bus bars were found and retightened.</td></tr>
+                  <tr><td><span class="guide-tag">Health Check - Sleep/Wake</span></td><td>Miner triggered the health check protocol and was put to sleep or woken up.</td></tr>
+                </tbody>
+              </table></div>
+
+              <div class="guide-note">💡 <strong>Tip:</strong> Be as specific as possible in the Diagnosis and Remarks fields. This data is used in shift reports and serial history tracking.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Replacing Miners ── -->
+        <div class="guide-section hidden" id="guide-replace-miner">
+          <div class="card">
+            <div class="ch"><div class="ct">⛏️ Replacing Miners</div></div>
+            <div class="guide-body">
+              <p class="guide-intro">Use this to record a miner unit swap — when a faulty miner is pulled out and a new one is installed in its place.</p>
+
+              <div class="guide-step"><span class="guide-num">1</span><div><strong>Open the form</strong> — Click <span class="guide-tag">⛏️ Replace Miner</span> on the Submer Data Home page.</div></div>
+              <div class="guide-step"><span class="guide-num">2</span><div><strong>Enter the Location</strong> — Specify the IP address of the slot where the replacement is happening. <span class="guide-warn">Make sure this is correct.</span></div></div>
+              <div class="guide-step"><span class="guide-num">3</span><div><strong>New Serial Number</strong> — Enter the serial number of the replacement unit being installed. Double-check before submitting.</div></div>
+              <div class="guide-step"><span class="guide-num">4</span><div><strong>Old Serial Number</strong> — Enter the serial number of the unit being removed. The system will automatically look up its current record.</div></div>
+              <div class="guide-step"><span class="guide-num">5</span><div><strong>Remarks / Notes</strong> — Log the reason for replacement and any observations about the faulty unit. <span class="guide-warn">This will be saved to the old serial's record.</span></div></div>
+              <div class="guide-step"><span class="guide-num">6</span><div><strong>Submit</strong> — Click <span class="guide-tag">Submit All</span>. You can add multiple replacements in one submission using <span class="guide-tag">＋ Add Another</span>.</div></div>
+
+              <div class="guide-divider"></div>
+              <div class="guide-note">📦 <strong>After submission:</strong> The old miner's location is automatically set to <strong>WH1</strong> and the remarks are saved to its record. The new miner is marked as <strong>Onboarded</strong> at the specified location.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Replacing PSUs ── -->
+        <div class="guide-section hidden" id="guide-replace-psu">
+          <div class="card">
+            <div class="ch"><div class="ct">🔋 Replacing PSUs</div></div>
+            <div class="guide-body">
+              <p class="guide-intro">Use this to record a PSU swap — when a faulty PSU is removed and replaced with a working unit.</p>
+
+              <div class="guide-step"><span class="guide-num">1</span><div><strong>Open the form</strong> — Click <span class="guide-tag">🔋 Replace PSU</span> on the Submer Data Home page.</div></div>
+              <div class="guide-step"><span class="guide-num">2</span><div><strong>PSU Model</strong> — Select the specific model used (GPW121215 or APW121215).</div></div>
+              <div class="guide-step"><span class="guide-num">3</span><div><strong>Location</strong> — Enter the IP address of the miner slot where this PSU is installed. <span class="guide-warn">Specify this correctly.</span></div></div>
+              <div class="guide-step"><span class="guide-num">4</span><div><strong>New Serial Number</strong> — Enter the serial of the replacement PSU being installed.</div></div>
+              <div class="guide-step"><span class="guide-num">5</span><div><strong>Old Serial Number</strong> — Enter the serial of the PSU being removed.</div></div>
+              <div class="guide-step"><span class="guide-num">6</span><div><strong>Old PSU Status</strong> — Select the new status for the removed PSU (Faulty, For Testing, etc.).</div></div>
+              <div class="guide-step"><span class="guide-num">7</span><div><strong>Remarks / Notes</strong> — Log the fault details and any observations. <span class="guide-warn">This will be saved to the old PSU's record.</span></div></div>
+              <div class="guide-step"><span class="guide-num">8</span><div><strong>Submit</strong> — Click <span class="guide-tag">Submit All</span>.</div></div>
+
+              <div class="guide-divider"></div>
+              <div class="guide-note">⚠️ <strong>Avalon PSUs:</strong> The Replace PSU form is for Antminer PSUs only. For Avalon PSU status updates, use the <span class="guide-tag">🔧 Equipment Update</span> option instead.</div>
+              <div class="guide-note" style="margin-top:8px">📦 <strong>After submission:</strong> The old PSU's location is automatically set to <strong>WH1</strong> and the remarks are saved to its record. The new PSU is marked as <strong>Tested</strong> at the specified location.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Equipment Update ── -->
+        <div class="guide-section hidden" id="guide-equip-update">
+          <div class="card">
+            <div class="ch"><div class="ct">🔧 Equipment Update</div></div>
+            <div class="guide-body">
+              <p class="guide-intro">Use this when a specific miner or PSU needs a status update — without doing a full replacement. This is useful when a unit comes back from repair, is declared unrepairable, or changes state.</p>
+
+              <div class="guide-step"><span class="guide-num">1</span><div><strong>Open the form</strong> — Click <span class="guide-tag">🔧 Equipment Update</span> on the Submer Data Home page.</div></div>
+              <div class="guide-step"><span class="guide-num">2</span><div><strong>Equipment Type</strong> — Select whether you are updating a <strong>Miner</strong> or a <strong>PSU</strong>.</div></div>
+              <div class="guide-step"><span class="guide-num">3</span><div><strong>Update Type — Miner</strong> — Choose the appropriate update:<br/>
+                <div style="margin-top:8px;display:flex;flex-direction:column;gap:5px">
+                  <span><span class="guide-tag">Consolidation</span> — Miner has been fully consolidated.</span>
+                  <span><span class="guide-tag">Bad</span> — Miner confirmed as bad after assessment.</span>
+                  <span><span class="guide-tag">Repaired</span> — Miner has come back from repair and is functional.</span>
+                  <span><span class="guide-tag">Unrepairable</span> — Miner has been declared beyond repair.</span>
+                </div>
+              </div></div>
+              <div class="guide-step"><span class="guide-num">4</span><div><strong>Update Type — PSU</strong> — First select the PSU Type: <strong>Antminer</strong> or <strong>Avalon</strong>.<br/>
+                <div style="margin-top:10px;margin-bottom:6px;font-size:.78rem;font-weight:700;color:var(--text2)">If Antminer:</div>
+                <div style="display:flex;flex-direction:column;gap:5px;margin-bottom:12px">
+                  <span><span class="guide-tag">Good</span> — PSU has been tested and is working.</span>
+                  <span><span class="guide-tag">Bad</span> — PSU has been confirmed faulty.</span>
+                  <span><span class="guide-tag">Scrap</span> — PSU is beyond use and to be scrapped.</span>
+                </div>
+                <div style="margin-bottom:6px;font-size:.78rem;font-weight:700;color:var(--text2)">If Avalon:</div>
+                <div style="display:flex;flex-direction:column;gap:5px">
+                  <span><span class="guide-tag">New Spare</span> — Brand new PSU, not yet deployed.</span>
+                  <span><span class="guide-tag">Operational</span> — PSU is working and attached to a miner. <span class="guide-warn">You will be asked for the Miner Serial it is attached to.</span></span>
+                  <span><span class="guide-tag">Repaired</span> — PSU has returned from repair.</span>
+                  <span><span class="guide-tag">For Repair</span> — PSU is faulty and needs to be sent for repair.</span>
+                  <span><span class="guide-tag">Sent for Repair</span> — PSU has been sent to the repair hub.</span>
+                  <span><span class="guide-tag">Scrapped</span> — PSU has not returned or is beyond repair / out of warranty.</span>
+                </div>
+              </div></div>
+              <div class="guide-step"><span class="guide-num">5</span><div><strong>Serial Number</strong> — Enter the serial number of the unit to be updated. <span class="guide-warn">Make sure this is entered correctly.</span></div></div>
+              <div class="guide-step"><span class="guide-num">6</span><div><strong>Submit</strong> — Click <span class="guide-tag">Confirm Update</span>. The change is logged to the unit's serial history automatically.</div></div>
+
+              <div class="guide-divider"></div>
+              <div class="guide-note">💡 <strong>Note:</strong> Equipment Update does not replace a unit — it only changes the status of an existing record. Use the Replacement forms if you are physically swapping units.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Serial History ── -->
+        <div class="guide-section hidden" id="guide-serial-hist">
+          <div class="card">
+            <div class="ch"><div class="ct">🔍 Checking Serial History</div></div>
+            <div class="guide-body">
+              <p class="guide-intro">Every miner and PSU has a full change timeline — every replacement, status update, and edit is recorded and viewable by serial number.</p>
+
+              <div class="guide-step"><span class="guide-num">1</span><div><strong>Go to Serial Search</strong> — Click <span class="guide-tag">🔍 Serial Search</span> in the Submer Data navigation menu.</div></div>
+              <div class="guide-step"><span class="guide-num">2</span><div><strong>Enter the serial number</strong> — Type or paste the serial number of the unit you want to look up and press <span class="guide-tag">Search</span>.</div></div>
+              <div class="guide-step"><span class="guide-num">3</span><div><strong>View the record</strong> — The current details of the unit will appear: model, location, status, remarks, and who last updated it.</div></div>
+              <div class="guide-step"><span class="guide-num">4</span><div><strong>Change Timeline</strong> — Below the record, every logged event is shown in chronological order — replacements, equipment updates, imports, and manual edits — each showing the date, time, and operator who made the change.</div></div>
+
+              <div class="guide-divider"></div>
+              <div class="guide-note">💡 <strong>Tip:</strong> You can look up both the new and old serial in a replacement. Each serial has its own independent history — so the old unit shows when it was removed and why, and the new unit shows when it was installed.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Activities History ── -->
+        <div class="guide-section hidden" id="guide-act-hist">
+          <div class="card">
+            <div class="ch"><div class="ct">📋 Activities History</div></div>
+            <div class="guide-body">
+              <p class="guide-intro">A full log of all activities recorded across all shifts. Use the filters to find specific entries quickly.</p>
+
+              <div class="guide-step"><span class="guide-num">1</span><div><strong>Go to Activities History</strong> — Click <span class="guide-tag">⚙️ Activities History</span> in the Submer Data navigation menu.</div></div>
+              <div class="guide-step"><span class="guide-num">2</span><div><strong>Search</strong> — Use the search bar to filter by activity type, IP address, diagnosis, or technician name.</div></div>
+              <div class="guide-step"><span class="guide-num">3</span><div><strong>Filter by Type</strong> — Use the Activity Type dropdown to show only a specific category (e.g. only CB Replacements).</div></div>
+              <div class="guide-step"><span class="guide-num">4</span><div><strong>Filter by Date</strong> — Use the date picker to view activities from a specific day.</div></div>
+              <div class="guide-step"><span class="guide-num">5</span><div><strong>Filter by Status</strong> — Filter by the activity resolution status (Open, Resolved, Monitoring, etc.).</div></div>
+              <div class="guide-step"><span class="guide-num">6</span><div><strong>Edit an activity</strong> — You can edit activities that belong to your <strong>current active shift today only</strong>. Previous shifts are read-only. Admins can edit any activity.</div></div>
+              <div class="guide-step"><span class="guide-num">7</span><div><strong>Real-time updates</strong> — The table updates automatically when any user logs a new activity. No need to refresh the page.</div></div>
+
+              <div class="guide-divider"></div>
+              <div class="guide-note">💡 <strong>Tip:</strong> The Recent Activities card on the Submer Data Home also shows the latest 20 entries at a glance and updates in real-time.</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
     </main>
   </div>
 </div>
@@ -1661,7 +1856,25 @@ async function doRegister() {
   if (error) { toast('Registration failed.', 'e'); return; }
   setS(data); toast('Account created — awaiting approval.', 'i'); showScreen('awaiting');
 }
-function logout() { clrS(); showScreen('auth'); }
+let _activitiesChannel = null;
+
+function startActivitiesRealtime() {
+  if (_activitiesChannel) sb.removeChannel(_activitiesChannel);
+  _activitiesChannel = sb.channel('activities-realtime')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'activities' }, () => {
+      // Re-render Activities History page if it's open
+      if (!el('page-activities').classList.contains('hidden')) renderActivities();
+      // Always refresh the Recent Activities card on Submer dashboard
+      if (!el('page-home').classList.contains('hidden')) renderDash();
+    })
+    .subscribe();
+}
+
+function stopActivitiesRealtime() {
+  if (_activitiesChannel) { sb.removeChannel(_activitiesChannel); _activitiesChannel = null; }
+}
+
+function logout() { stopActivitiesRealtime(); clrS(); showScreen('auth'); }
 
 async function doForgotPassword() {
   const username = v('fp-u').trim();
@@ -1717,6 +1930,7 @@ function initApp() {
   el('nwrap').classList.toggle('hidden', u.role!=='admin');
   applyTheme(_theme);
   if (u.role==='admin') refreshBell();
+  startActivitiesRealtime();
   go('homepage');
   // Show check-in overlay for operators (not admin)
   if (u.role !== 'admin') showCheckinOverlay();
@@ -2023,8 +2237,8 @@ async function submitCheckin() {
 // ══════════════════════════════════════════════
 // NAVIGATION
 // ══════════════════════════════════════════════
-const PAGES = ['homepage','home','bitmain-home','new','my','serial','activities','report','db','db-miners','db-bt-miners','db-psus','users','miner-form','psu-form'];
-const CHILD_PAGES = ['activities','new','my','serial','report'];
+const PAGES = ['homepage','home','bitmain-home','new','my','serial','activities','report','db','db-miners','db-bt-miners','db-psus','users','miner-form','psu-form','guide'];
+const CHILD_PAGES = ['activities','new','my','serial','report','guide'];
 function go(page, sub) {
   el('ndrop')?.classList.add('hidden');
   PAGES.forEach(p => { el('page-'+p)?.classList.add('hidden'); el('nav-'+p)?.classList.remove('active'); });
@@ -2062,6 +2276,15 @@ function go(page, sub) {
   if (page==='users')       renderUsrsPage();
   if (page==='miner-form')  { el('miner-rows-wrap').innerHTML=''; _mRowCount=0; addMinerRow(); }
   if (page==='psu-form')    { el('psu-rows-wrap').innerHTML='';   _pRowCount=0; addPSURow(); }
+}
+
+function showGuideTab(tab) {
+  document.querySelectorAll('.guide-section').forEach(s => s.classList.add('hidden'));
+  document.querySelectorAll('.guide-tab-btn').forEach(b => b.classList.remove('active'));
+  const sec = el('guide-' + tab);
+  if (sec) sec.classList.remove('hidden');
+  const btn = document.querySelector(`[onclick="showGuideTab('${tab}')"]`);
+  if (btn) btn.classList.add('active');
 }
 
 function toggleNavDrop(e) {
@@ -2246,7 +2469,6 @@ function addPSURow() {
     <div class="fstitle" style="margin-bottom:8px">Equipment Details</div>
     <div class="fgrid" style="margin-bottom:10px">
       <div class="fg"><label class="fl">PSU Model</label><select class="fs" id="p-model-${idx}"><option value="">Select…</option><option>GPW121215</option><option>APW121215</option></select></div>
-      <div class="fg"><label class="fl">Type</label><select class="fs" id="p-type-${idx}"><option value="">Select…</option><option>Antminer</option><option>Avalon</option></select></div>
       <div class="fg"><label class="fl">Location</label><input class="fi" id="p-loc-${idx}" placeholder="e.g. Row A, Rack 3"/></div>
     </div>
     <div class="fstitle" style="margin-bottom:8px">Serial Numbers</div>
@@ -2276,14 +2498,13 @@ async function subAllPSUs() {
   rows.forEach(row => {
     const idx   = row.id.replace('psu-row-','');
     const model = el(`p-model-${idx}`)?.value || '';
-    const type  = el(`p-type-${idx}`)?.value  || '';
     const loc   = el(`p-loc-${idx}`)?.value.trim()   || '';
     const ns    = el(`p-new-${idx}`)?.value.trim()   || '';
     const os    = el(`p-old-${idx}`)?.value.trim()   || '';
     const ost   = el(`p-old-st-${idx}`)?.value || '';
     const rmk   = el(`p-remarks-${idx}`)?.value.trim() || '';
-    if (!model||!type||!loc||!ns||!os) { toast(`Replacement #${idx}: fill all required fields.`,'e'); hasError=true; return; }
-    inserts.push({ model, type, loc, ns, os, ost, rmk });
+    if (!model||!loc||!ns||!os) { toast(`Replacement #${idx}: fill all required fields.`,'e'); hasError=true; return; }
+    inserts.push({ model, type:'Antminer', loc, ns, os, ost, rmk });
   });
   if (hasError) return;
   showLoading(`Saving ${inserts.length} replacement${inserts.length>1?'s':''}…`);
@@ -4001,6 +4222,14 @@ function addEuRow() {
           <option value="psu">PSU</option>
         </select>
       </div>
+      <div class="fg" id="eu-psu-type-wrap-${idx}" style="display:none">
+        <label class="fl">PSU Type</label>
+        <select class="fs" id="eu-psu-type-${idx}" onchange="euPsuTypeChange(${idx})">
+          <option value="">Select…</option>
+          <option value="antminer">Antminer</option>
+          <option value="avalon">Avalon</option>
+        </select>
+      </div>
       <div class="fg" id="eu-type-wrap-${idx}" style="display:none">
         <label class="fl">Update Type</label>
         <select class="fs" id="eu-type-${idx}" onchange="euTypeChange(${idx})">
@@ -4022,8 +4251,12 @@ function addEuRow() {
           <option value="Scrapped">Scrapped</option>
         </select>
       </div>
+      <div class="fg" id="eu-miner-serial-wrap-${idx}" style="display:none">
+        <label class="fl">Miner Serial <span style="font-size:.6rem;color:var(--text3);font-weight:400">(PSU is attached to this miner)</span></label>
+        <input class="fi" id="eu-miner-serial-${idx}" placeholder="Enter miner serial number…"/>
+      </div>
       <div class="fg" id="eu-serial-wrap-${idx}" style="display:none">
-        <label class="fl">Serial Number</label>
+        <label class="fl">PSU Serial Number</label>
         <input class="fi" id="eu-serial-${idx}" placeholder="Enter serial number…" onblur="validateEuSerial(${idx})"/>
         <div id="eu-serial-feedback-${idx}" style="margin-top:5px;font-size:.72rem;display:none"></div>
       </div>
@@ -4033,20 +4266,41 @@ function addEuRow() {
 
 function euEquipChange(idx) {
   const equip = el(`eu-equip-${idx}`).value;
-  const typeSelect = el(`eu-type-${idx}`);
-  el(`eu-type-${idx}`).value = '';
-  [`eu-miner-type-wrap-${idx}`, `eu-condition-wrap-${idx}`, `eu-serial-wrap-${idx}`]
+  // Reset all dependent fields
+  [`eu-psu-type-wrap-${idx}`,`eu-type-wrap-${idx}`,`eu-miner-type-wrap-${idx}`,
+   `eu-condition-wrap-${idx}`,`eu-miner-serial-wrap-${idx}`,`eu-serial-wrap-${idx}`]
     .forEach(id => el(id).style.display = 'none');
+  el(`eu-type-${idx}`).innerHTML = '<option value="">Select…</option>';
+  const fb = el(`eu-serial-feedback-${idx}`);
+  if (fb) { fb.style.display = 'none'; fb.textContent = ''; }
 
-  if (!equip) { el(`eu-type-wrap-${idx}`).style.display = 'none'; return; }
+  if (!equip) return;
 
-  typeSelect.innerHTML = '<option value="">Select…</option>';
   if (equip === 'miner') {
     [['consolidation','Consolidation'],['repaired','Repaired'],['bad','Bad'],['unrepairable','Unrepairable']]
-      .forEach(([v,l]) => typeSelect.innerHTML += `<option value="${v}">${l}</option>`);
+      .forEach(([v,l]) => el(`eu-type-${idx}`).innerHTML += `<option value="${v}">${l}</option>`);
+    el(`eu-type-wrap-${idx}`).style.display = '';
   } else {
+    // PSU — show type selector first
+    el(`eu-psu-type-wrap-${idx}`).style.display = '';
+  }
+}
+
+function euPsuTypeChange(idx) {
+  const psuType = el(`eu-psu-type-${idx}`).value;
+  el(`eu-type-${idx}`).innerHTML = '<option value="">Select…</option>';
+  [`eu-type-wrap-${idx}`,`eu-miner-serial-wrap-${idx}`,`eu-serial-wrap-${idx}`]
+    .forEach(id => el(id).style.display = 'none');
+
+  if (!psuType) return;
+
+  if (psuType === 'antminer') {
     [['good','Good'],['bad','Bad'],['scrap','Scrap']]
-      .forEach(([v,l]) => typeSelect.innerHTML += `<option value="${v}">${l}</option>`);
+      .forEach(([v,l]) => el(`eu-type-${idx}`).innerHTML += `<option value="${v}">${l}</option>`);
+  } else {
+    [['new-spare','New Spare'],['operational','Operational'],['repaired','Repaired'],
+     ['for-repair','For Repair'],['sent-for-repair','Sent for Repair'],['scrapped','Scrapped']]
+      .forEach(([v,l]) => el(`eu-type-${idx}`).innerHTML += `<option value="${v}">${l}</option>`);
   }
   el(`eu-type-wrap-${idx}`).style.display = '';
 }
@@ -4054,15 +4308,19 @@ function euEquipChange(idx) {
 function euTypeChange(idx) {
   const equip = el(`eu-equip-${idx}`).value;
   const type  = el(`eu-type-${idx}`).value;
-  el(`eu-miner-type-wrap-${idx}`).style.display  = 'none';
-  el(`eu-condition-wrap-${idx}`).style.display   = 'none';
-  el(`eu-serial-wrap-${idx}`).style.display      = 'none';
-  // Clear serial feedback when type changes
+  el(`eu-miner-type-wrap-${idx}`).style.display    = 'none';
+  el(`eu-condition-wrap-${idx}`).style.display     = 'none';
+  el(`eu-miner-serial-wrap-${idx}`).style.display  = 'none';
+  el(`eu-serial-wrap-${idx}`).style.display        = 'none';
   const fb = el(`eu-serial-feedback-${idx}`);
   if (fb) { fb.style.display = 'none'; fb.textContent = ''; }
   if (!type) return;
   if (equip === 'miner' && type === 'repaired')     el(`eu-miner-type-wrap-${idx}`).style.display = '';
   if (equip === 'miner' && type === 'unrepairable') el(`eu-condition-wrap-${idx}`).style.display  = '';
+  if (equip === 'psu'   && type === 'operational')  el(`eu-miner-serial-wrap-${idx}`).style.display = '';
+  // Update serial label based on equipment
+  const serialLabel = el(`eu-serial-wrap-${idx}`)?.querySelector('.fl');
+  if (serialLabel) serialLabel.textContent = equip === 'psu' ? 'PSU Serial Number' : 'Serial Number';
   el(`eu-serial-wrap-${idx}`).style.display = '';
 }
 
@@ -4110,16 +4368,19 @@ async function submitAllEquipUpdates() {
   // Validate all rows first
   const updates = [];
   rows.forEach(row => {
-    const idx     = row.id.replace('eu-row-','');
-    const equip   = el(`eu-equip-${idx}`)?.value || '';
-    const type    = el(`eu-type-${idx}`)?.value  || '';
-    const serial  = el(`eu-serial-${idx}`)?.value.trim() || '';
+    const idx       = row.id.replace('eu-row-','');
+    const equip     = el(`eu-equip-${idx}`)?.value || '';
+    const type      = el(`eu-type-${idx}`)?.value  || '';
+    const serial    = el(`eu-serial-${idx}`)?.value.trim() || '';
+    const psuType   = el(`eu-psu-type-${idx}`)?.value || '';
+    const minerSerial = el(`eu-miner-serial-${idx}`)?.value.trim() || '';
     if (!equip || !type || !serial) { toast(`Update #${idx}: fill all fields.`, 'e'); hasError = true; return; }
-    // Block if miner type mismatch detected
+    if (equip === 'psu' && !psuType) { toast(`Update #${idx}: select PSU Type.`, 'e'); hasError = true; return; }
+    if (equip === 'psu' && type === 'operational' && !minerSerial) { toast(`Update #${idx}: enter the Miner Serial for this PSU.`, 'e'); hasError = true; return; }
     if (equip === 'miner' && type === 'repaired' && el(`eu-serial-${idx}`)?.dataset.mismatch === '1') {
       toast(`Update #${idx}: Check Miner Type! Serial doesn't match selected type.`, 'e'); hasError = true; return;
     }
-    updates.push({ idx, equip, type, serial });
+    updates.push({ idx, equip, type, serial, psuType, minerSerial });
   });
   if (hasError) return;
 
@@ -4152,9 +4413,27 @@ async function submitAllEquipUpdates() {
       }
       await sb.from('miners').update({ status: newStatus, updated_by: op, updated_at: now() }).eq('serial', serial);
     } else {
-      if (type === 'good')  { newStatus = 'Tested';   logDetail = 'Equipment Update: Good → Tested'; }
-      if (type === 'bad')   { newStatus = 'Faulty';   logDetail = 'Equipment Update: Bad → Faulty'; }
-      if (type === 'scrap') { newStatus = 'Scrapped'; logDetail = 'Equipment Update: Scrap → Scrapped'; }
+      // PSU update
+      const { psuType, minerSerial } = u;
+      if (psuType === 'antminer') {
+        if (type === 'good')  { newStatus = 'Tested';   logDetail = 'Equipment Update: Good → Tested'; }
+        if (type === 'bad')   { newStatus = 'Faulty';   logDetail = 'Equipment Update: Bad → Faulty'; }
+        if (type === 'scrap') { newStatus = 'Scrapped'; logDetail = 'Equipment Update: Scrap → Scrapped'; }
+      } else {
+        const avalonMap = {
+          'new-spare':      ['New Spare',       'Equipment Update: New Spare'],
+          'operational':    ['Operational',     `Equipment Update: Operational${minerSerial?' | Attached to Miner: '+minerSerial:''}`],
+          'repaired':       ['Repaired',        'Equipment Update: Repaired'],
+          'for-repair':     ['For Repair',      'Equipment Update: For Repair'],
+          'sent-for-repair':['Sent for Repair', 'Equipment Update: Sent for Repair'],
+          'scrapped':       ['Scrapped',        'Equipment Update: Scrapped'],
+        };
+        [newStatus, logDetail] = avalonMap[type] || ['', ''];
+        // For Operational, also update location to miner serial
+        if (type === 'operational' && minerSerial) {
+          await sb.from('psus').update({ location: minerSerial, updated_by: op, updated_at: now() }).eq('serial', serial);
+        }
+      }
       await sb.from('psus').update({ status: newStatus, updated_by: op, updated_at: now() }).eq('serial', serial);
     }
     await dbLog(serial, 'Equipment Update', logDetail, op);
