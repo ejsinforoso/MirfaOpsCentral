@@ -388,6 +388,40 @@ td.rmk{color:var(--text2);font-size:.74rem;max-width:180px;overflow:hidden;text-
 .b-st-sleep      {background:rgba(100,116,139,.12);color:#94a3b8;border:1px solid rgba(100,116,139,.3);font-weight:700}
 .b-st-done       {background:rgba(34,197,94,.12);color:#4ade80;border:1px solid rgba(34,197,94,.3);font-weight:700}
 
+/* OPERATIONS INSIGHTS */
+.ins-section{margin-bottom:18px}
+.ins-section:last-child{margin-bottom:0}
+.ins-title{font-size:.7rem;font-weight:700;color:var(--text3);font-family:var(--mono);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.ins-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.ins-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px}
+.ins-tile{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:11px 13px;display:flex;flex-direction:column;gap:3px}
+.ins-tile-label{font-size:.68rem;color:var(--text3);font-family:var(--mono)}
+.ins-tile-val{font-size:1.05rem;font-weight:700;color:var(--text);font-family:var(--mono)}
+.ins-tile-sub{font-size:.66rem;color:var(--text3)}
+.ins-tile.warn{border-color:rgba(255,171,0,.35);background:rgba(255,171,0,.06)}
+.ins-tile.warn .ins-tile-val{color:var(--yellow)}
+.ins-tile.danger{border-color:rgba(244,67,54,.3);background:rgba(244,67,54,.06)}
+.ins-tile.danger .ins-tile-val{color:var(--red)}
+.ins-tile.good{border-color:rgba(0,200,83,.3);background:rgba(0,200,83,.06)}
+.ins-tile.good .ins-tile-val{color:var(--green)}
+.ins-table{width:100%;border-collapse:collapse;font-size:.76rem}
+.ins-table th{text-align:left;font-size:.65rem;font-weight:600;color:var(--text3);font-family:var(--mono);padding:4px 8px;border-bottom:1px solid var(--border);text-transform:uppercase}
+.ins-table td{padding:6px 8px;border-bottom:1px solid var(--border);color:var(--text2)}
+.ins-table tr:last-child td{border-bottom:none}
+.ins-table td:first-child{color:var(--text);font-weight:600;font-family:var(--mono)}
+.ins-trend-row{display:flex;gap:8px;flex-wrap:wrap}
+.ins-trend-week{background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:8px 12px;flex:1;min-width:110px;text-align:center}
+.ins-trend-week .tw-label{font-size:.65rem;color:var(--text3);font-family:var(--mono)}
+.ins-trend-week .tw-count{font-size:1.3rem;font-weight:800;font-family:var(--mono);color:var(--text)}
+.ins-trend-arrow{font-size:.75rem;font-weight:700;font-family:var(--mono)}
+.ins-trend-arrow.up{color:var(--red)}
+.ins-trend-arrow.down{color:var(--green)}
+.ins-trend-arrow.flat{color:var(--text3)}
+.ins-repeat-row{display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)}
+.ins-repeat-row:last-child{border-bottom:none}
+.ins-repeat-serial{font-family:var(--mono);font-size:.76rem;color:var(--accent)}
+.ins-repeat-count{background:rgba(244,67,54,.12);color:var(--red);border:1px solid rgba(244,67,54,.25);border-radius:5px;padding:1px 7px;font-size:.68rem;font-weight:700;font-family:var(--mono)}
+.ins-empty{font-size:.76rem;color:var(--text3);font-family:var(--mono);padding:4px 0}
 /* TEAM CHAT */
 #chat-bubble{position:fixed;bottom:22px;right:22px;z-index:800;display:flex;flex-direction:column;align-items:flex-end;gap:10px}
 #chat-btn{position:absolute;inset:0;width:50px;height:50px;border-radius:50%;background:var(--accent);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.22rem;box-shadow:0 4px 18px var(--aglow);transition:var(--t);flex-shrink:0}
@@ -789,6 +823,17 @@ td.rmk{color:var(--text2);font-size:.74rem;max-width:180px;overflow:hidden;text-
             <div class="si-card bt-miners"><div class="si-label">Active Miners</div><div class="si-value" id="bt-si-miners">—</div><div class="si-unit">units running</div></div>
           </div>
         </div>
+
+        <!-- Operations Insights -->
+        <div class="card" style="margin-top:14px">
+          <div class="ch">
+            <div class="ct">Operations Insights</div>
+            <button class="btn bs bsm" id="insights-refresh-btn" onclick="renderInsights()" style="font-size:.7rem;padding:4px 10px">↻ Refresh</button>
+          </div>
+          <div id="insights-body">
+            <div style="color:var(--text3);font-size:.8rem;text-align:center;padding:20px;font-family:var(--mono)">Loading insights…</div>
+          </div>
+        </div>
       </div>
 
       <!-- ══ BITMAIN DATA HOME ══ -->
@@ -842,7 +887,7 @@ td.rmk{color:var(--text2);font-size:.74rem;max-width:180px;overflow:hidden;text-
       <!-- ══ DASHBOARD (Submer Data Home) ══ -->
       <div id="page-home" class="hidden">
         <div class="ph">
-          <div class="pt">⛏️ Submer Data</div>
+          <div class="pt">Submer Data</div>
           <div class="ps" id="dsub">Welcome</div>
         </div>
 
@@ -955,9 +1000,9 @@ td.rmk{color:var(--text2);font-size:.74rem;max-width:180px;overflow:hidden;text-
 
         <!-- Recent activities -->
         <div class="card">
-          <div class="ch"><div class="ct">Recent Activities</div><span style="font-size:.72rem;color:var(--text3)">Latest 20</span></div>
+          <div class="ch"><div class="ct">Recent Activities</div><span style="font-size:.72rem;color:var(--text3)">Latest 20 · Activities &amp; Replacements</span></div>
           <div class="tw"><table>
-            <thead><tr><th>Type</th><th>IP</th><th>Diagnosis</th><th>Remarks / Action</th><th>Tech</th><th>Logged By</th><th>Date / Time</th></tr></thead>
+            <thead><tr><th>Type</th><th>Serial / IP</th><th>Details</th><th>Remarks</th><th>Operator</th><th>Shift</th><th>Date / Time</th></tr></thead>
             <tbody id="d-act-tbody"></tbody>
           </table></div>
         </div>
@@ -966,8 +1011,8 @@ td.rmk{color:var(--text2);font-size:.74rem;max-width:180px;overflow:hidden;text-
       <!-- ══ REPLACEMENT HISTORY ══ -->
       <div id="page-new" class="hidden">
         <div class="ph">
-          <div class="pt">🔄 Replacement History</div>
-          <div class="ps">All miner and PSU replacements</div>
+          <div class="pt">Replacement History</div>
+          <div class="ps">All Miner and PSU Replacements</div>
         </div>
         <div class="fbar">
           <input class="fi" id="rh-s" placeholder="Search serial, location…" oninput="_rhPage=0;renderRepHistory()"/>
@@ -1159,7 +1204,7 @@ td.rmk{color:var(--text2);font-size:.74rem;max-width:180px;overflow:hidden;text-
 
       <!-- ══ ACTIVITIES HISTORY ══ -->
       <div id="page-activities" class="hidden">
-        <div class="ph"><div class="pt">⚙️ Activities History</div><div class="ps">All logged shift activities</div></div>
+        <div class="ph"><div class="pt">Activities History</div><div class="ps">All logged shift activities</div></div>
         <div style="display:flex;gap:9px;margin-bottom:14px;flex-wrap:wrap;align-items:center">
           <button class="btn bp bsm" onclick="openActivityModal()">＋ Record Activity</button>
           <button class="btn bs bsm" onclick="exportActivities()">⬇ Export</button>
@@ -1228,7 +1273,7 @@ td.rmk{color:var(--text2);font-size:.74rem;max-width:180px;overflow:hidden;text-
       <!-- ══ LOGISTICS ══ -->
       <div id="page-logistics" class="hidden">
         <div class="ph">
-          <div class="pt">🚛 Logistics</div>
+          <div class="pt">Logistics</div>
           <div class="ps">Material passes and delivery tracking</div>
         </div>
 
@@ -1236,7 +1281,7 @@ td.rmk{color:var(--text2);font-size:.74rem;max-width:180px;overflow:hidden;text-
         <div class="card">
           <div class="ch"><div class="ct">Quick Actions</div></div>
           <div style="display:flex;gap:10px;flex-wrap:wrap;padding:4px 0 6px">
-            <button class="btn bp" onclick="openMaterialPassModal()" >📋 &nbsp;Record Material Movement</button>
+            <button class="btn bs" onclick="openMaterialPassModal()" >📋 &nbsp;Record Material Movement</button>
             <button class="btn bs" onclick="toast('Coming soon — Bitmain Delivery/Repair Tracker','i')" style="opacity:.55;cursor:not-allowed" title="Coming soon" disabled>🚚 &nbsp;Bitmain Delivery/Repair Tracker</button>
           </div>
         </div>
@@ -2142,6 +2187,7 @@ function logout() {
   if (_chatChannel) { sb.removeChannel(_chatChannel); _chatChannel = null; }
   _chatInitialised = false;
   _chatOpen = false;
+  _insightsLoaded = false;
   _presenceUsers = {};
   el('chat-bubble').style.display = 'none';
   el('chat-panel').classList.add('hidden');
@@ -3084,7 +3130,7 @@ async function renderRepHistory() {
   set('rh-tbody', rows.length ? rows.map((r, i) => `
     <tr>
       <td style="color:var(--text3)">${from + i + 1}</td>
-      <td><span class="badge ${r._t === 'miner' ? 'b-miner' : 'b-psu'}">${r._t === 'miner' ? '⛏️ Miner' : '🔋 PSU'}</span></td>
+      <td><span class="badge ${r._t === 'miner' ? 'b-miner' : 'b-psu'}">${r._t === 'miner' ? 'Miner' : 'PSU'}</span></td>
       <td><span class="serial-link" onclick="clickSerial('${esc(r.new_serial)}')">${esc(r.new_serial)}</span></td>
       <td>${sBadge(r.new_status, r._t)}</td>
       <td><span class="serial-link" onclick="clickSerial('${esc(r.old_serial)}')">${esc(r.old_serial)}</span></td>
@@ -3736,6 +3782,8 @@ async function renderHomepage() {
   } else {
     if (btPanel) btPanel.style.display = 'none';
   }
+
+  if (!_insightsLoaded) renderInsights();
 }
 
 async function renderDash() {
@@ -3748,20 +3796,57 @@ async function renderDash() {
 
   await renderDashSilent();
 
-  // Recent activities — latest 20
-  const { data: ra } = await sb.from('activities').select('*').order('created_at', { ascending: false }).limit(20);
-  const acts = (ra || []);
-  set('d-act-tbody', acts.length ? acts.map(r => `
+  // Recent activities + replacements — latest 20 combined
+  const [{ data: ra }, { data: rm }, { data: rp }] = await Promise.all([
+    sb.from('activities').select('id,activity_type,ip,diagnosis,remarks,tech,logged_by,shift,created_at').order('created_at', { ascending: false }).limit(20),
+    sb.from('miner_replacements').select('new_serial,old_serial,location,new_status,remarks,operator,shift,created_at').order('created_at', { ascending: false }).limit(20),
+    sb.from('psu_replacements').select('new_serial,old_serial,location,new_status,remarks,operator,shift,created_at').order('created_at', { ascending: false }).limit(20),
+  ]);
+
+  const combined = [
+    ...(ra||[]).map(r => ({
+      _kind: 'activity',
+      ts: r.created_at,
+      typeBadge: `<span class="badge b-act" style="white-space:normal;font-size:.68rem">${esc(r.activity_type)}</span>`,
+      serial: esc(r.ip)||'—',
+      details: `<span class="hi" style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block" title="${esc(r.diagnosis)}">${esc(r.diagnosis)||'—'}</span>`,
+      remarks: `<span style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block" title="${esc(r.remarks)}">${esc(r.remarks)||'—'}</span>`,
+      operator: esc(r.tech||r.logged_by||'—'),
+      shift: r.shift||''
+    })),
+    ...(rm||[]).map(r => ({
+      _kind: 'replacement',
+      ts: r.created_at,
+      typeBadge: `<span class="badge b-miner" style="font-size:.68rem">Miner Replaced</span>`,
+      serial: `<span style="color:var(--green)">${esc(r.new_serial)}</span> <span style="color:var(--text3);font-size:.7rem">← ${esc(r.old_serial)}</span>`,
+      details: `<span class="hi">${esc(r.location)||'—'} → ${esc(r.new_status)||'—'}</span>`,
+      remarks: `<span style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block" title="${esc(r.remarks)}">${esc(r.remarks)||'—'}</span>`,
+      operator: esc(r.operator||'—'),
+      shift: r.shift||''
+    })),
+    ...(rp||[]).map(r => ({
+      _kind: 'replacement',
+      ts: r.created_at,
+      typeBadge: `<span class="badge b-psu" style="font-size:.68rem">PSU Replaced</span>`,
+      serial: `<span style="color:var(--green)">${esc(r.new_serial)}</span> <span style="color:var(--text3);font-size:.7rem">← ${esc(r.old_serial)}</span>`,
+      details: `<span class="hi">${esc(r.location)||'—'} → ${esc(r.new_status)||'—'}</span>`,
+      remarks: `<span style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block" title="${esc(r.remarks)}">${esc(r.remarks)||'—'}</span>`,
+      operator: esc(r.operator||'—'),
+      shift: r.shift||''
+    })),
+  ].sort((a, b) => new Date(b.ts) - new Date(a.ts)).slice(0, 20);
+
+  set('d-act-tbody', combined.length ? combined.map(r => `
     <tr>
-      <td><span class="badge b-act" style="white-space:normal">${r.activity_type}</span></td>
-      <td style="font-size:.78rem;color:var(--text2)">${r.ip || '—'}</td>
-      <td class="hi" style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${(r.diagnosis||'').replace(/"/g,'&quot;')}">${r.diagnosis || '—'}</td>
-      <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${(r.remarks||'').replace(/"/g,'&quot;')}">${r.remarks || '—'}</td>
-      <td class="hi">${r.tech || '—'}</td>
-      <td style="color:var(--text2)">${r.logged_by || '—'}</td>
-      <td>${fmt(r.created_at)}</td>
+      <td>${r.typeBadge}</td>
+      <td style="font-size:.75rem;font-family:var(--mono)">${r.serial}</td>
+      <td>${r.details}</td>
+      <td>${r.remarks}</td>
+      <td class="hi">${r.operator}</td>
+      <td>${r.shift ? shBadge(r.shift) : '—'}</td>
+      <td style="color:var(--text2)">${fmt(r.ts)}</td>
     </tr>`).join('') :
-    `<tr class="erow"><td colspan="7"><span>⚙️</span>No activities yet.</td></tr>`);
+    `<tr class="erow"><td colspan="7"><span>⚙️</span>No recent activity yet.</td></tr>`);
 
   // Start auto-refresh timer
   startDashAutoRefresh();
@@ -5661,6 +5746,268 @@ async function exportReport() {
 }
 
 // ══════════════════════════════════════════════
+// OPERATIONS INSIGHTS
+// ══════════════════════════════════════════════
+let _insightsLoaded = false;
+
+async function renderInsights() {
+  const body = el('insights-body');
+  const btn  = el('insights-refresh-btn');
+  if (!body) return;
+  body.innerHTML = `<div style="color:var(--text3);font-size:.8rem;text-align:center;padding:20px;font-family:var(--mono)">⏳ Crunching data…</div>`;
+  if (btn) btn.disabled = true;
+
+  // Fetch all miner replacements (no limit — we need full history)
+  let allRep = [], from = 0;
+  while (true) {
+    const { data, error } = await sb.from('miner_replacements')
+      .select('new_serial,old_serial,location,new_status,old_status,operator,shift,created_at')
+      .order('created_at', { ascending: true })
+      .range(from, from + 999);
+    if (error || !data || data.length === 0) break;
+    allRep = allRep.concat(data);
+    if (data.length < 1000) break;
+    from += 1000;
+  }
+
+  // Fetch miner models to enrich replacements
+  let allMiners = [], mfrom = 0;
+  while (true) {
+    const { data, error } = await sb.from('miners')
+      .select('serial,model,location')
+      .range(mfrom, mfrom + 999);
+    if (error || !data || data.length === 0) break;
+    allMiners = allMiners.concat(data);
+    if (data.length < 1000) break;
+    mfrom += 1000;
+  }
+
+  // Fetch activities for failure type analysis
+  let allActs = [], afrom = 0;
+  while (true) {
+    const { data, error } = await sb.from('activities')
+      .select('activity_type,ip,diagnosis,created_at')
+      .order('created_at', { ascending: true })
+      .range(afrom, afrom + 999);
+    if (error || !data || data.length === 0) break;
+    allActs = allActs.concat(data);
+    if (data.length < 1000) break;
+    afrom += 1000;
+  }
+
+  if (btn) btn.disabled = false;
+
+  // Build serial→model map
+  const modelMap = {};
+  allMiners.forEach(m => { if (m.serial) modelMap[m.serial] = m.model || 'Unknown'; });
+
+  // Enrich replacements with model from old_serial (the one that failed)
+  allRep.forEach(r => {
+    r._model = modelMap[r.old_serial] || 'Unknown';
+    r._week  = _insWeekKey(r.created_at);
+  });
+
+  const now       = new Date();
+  const msPerWeek = 7 * 24 * 3600 * 1000;
+
+  // ── 1. Replacement rate by model ──
+  const byModel = {};
+  allRep.forEach(r => {
+    if (!byModel[r._model]) byModel[r._model] = 0;
+    byModel[r._model]++;
+  });
+  const modelRows = Object.entries(byModel)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 8);
+
+  // ── 2. Replacement rate by location ──
+  const byLoc = {};
+  allRep.forEach(r => {
+    const loc = (r.location || 'Unknown').trim();
+    if (!byLoc[loc]) byLoc[loc] = 0;
+    byLoc[loc]++;
+  });
+  const locRows = Object.entries(byLoc)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 8);
+
+  // ── 3. Most common failure/activity types ──
+  const byActType = {};
+  allActs.forEach(a => {
+    const t = a.activity_type || 'Unknown';
+    if (!byActType[t]) byActType[t] = 0;
+    byActType[t]++;
+  });
+  const actRows = Object.entries(byActType)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 6);
+
+  // ── 4. Repeat failures (old_serial replaced more than once) ──
+  const serialCount = {};
+  allRep.forEach(r => {
+    if (r.old_serial) {
+      if (!serialCount[r.old_serial]) serialCount[r.old_serial] = 0;
+      serialCount[r.old_serial]++;
+    }
+  });
+  const repeats = Object.entries(serialCount)
+    .filter(([, c]) => c > 1)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 10);
+
+  // ── 5. Weekly trend — last 8 weeks ──
+  const weeks = [];
+  for (let i = 7; i >= 0; i--) {
+    const wStart = new Date(now - i * msPerWeek);
+    const wEnd   = new Date(now - (i - 1) * msPerWeek);
+    const key    = _insWeekKey(wStart.toISOString());
+    const count  = allRep.filter(r => {
+      const d = new Date(r.created_at);
+      return d >= wStart && d < wEnd;
+    }).length;
+    weeks.push({ key, count, wStart });
+  }
+
+  // Trend signal: compare last 2 full weeks
+  const lastWeek = weeks[weeks.length - 2]?.count ?? 0;
+  const thisWeek = weeks[weeks.length - 1]?.count ?? 0;
+  const trendPct = lastWeek > 0 ? Math.round(((thisWeek - lastWeek) / lastWeek) * 100) : null;
+  const trendArrow = trendPct === null ? '' :
+    trendPct > 10  ? `<span class="ins-trend-arrow up">▲ ${trendPct}%</span>` :
+    trendPct < -10 ? `<span class="ins-trend-arrow down">▼ ${Math.abs(trendPct)}%</span>` :
+                     `<span class="ins-trend-arrow flat">→ Stable</span>`;
+
+  // ── Render ──
+  let html = '';
+
+  // Summary tiles
+  const totalRep   = allRep.length;
+  const last7days  = allRep.filter(r => (now - new Date(r.created_at)) < 7 * 24 * 3600 * 1000).length;
+  const last30days = allRep.filter(r => (now - new Date(r.created_at)) < 30 * 24 * 3600 * 1000).length;
+  const repeatCount = repeats.length;
+
+  html += `<div class="ins-section">
+    <div class="ins-title">Overview</div>
+    <div class="ins-grid">
+      <div class="ins-tile">
+        <div class="ins-tile-label">Total Replacements</div>
+        <div class="ins-tile-val">${totalRep}</div>
+        <div class="ins-tile-sub">All time</div>
+      </div>
+      <div class="ins-tile ${last7days > 10 ? 'warn' : last7days === 0 ? 'good' : ''}">
+        <div class="ins-tile-label">Last 7 Days</div>
+        <div class="ins-tile-val">${last7days}</div>
+        <div class="ins-tile-sub">Miner replacements</div>
+      </div>
+      <div class="ins-tile ${last30days > 40 ? 'warn' : ''}">
+        <div class="ins-tile-label">Last 30 Days</div>
+        <div class="ins-tile-val">${last30days}</div>
+        <div class="ins-tile-sub">Miner replacements</div>
+      </div>
+      <div class="ins-tile ${repeatCount > 0 ? 'danger' : 'good'}">
+        <div class="ins-tile-label">Repeat Failures</div>
+        <div class="ins-tile-val">${repeatCount}</div>
+        <div class="ins-tile-sub">Unique serials replaced 2×+</div>
+      </div>
+    </div>
+  </div>`;
+
+  // Weekly trend
+  const maxWeekCount = Math.max(...weeks.map(w => w.count), 1);
+  html += `<div class="ins-section">
+    <div class="ins-title">Weekly Replacement Trend ${trendArrow}</div>
+    <div class="ins-trend-row">
+      ${weeks.map((w, i) => {
+        const isThis = i === weeks.length - 1;
+        const barH   = Math.round((w.count / maxWeekCount) * 40);
+        const label  = _insWeekShort(w.wStart);
+        return `<div class="ins-trend-week" style="${isThis ? 'border-color:var(--accent);background:var(--adim)' : ''}">
+          <div style="display:flex;align-items:flex-end;justify-content:center;height:44px;margin-bottom:4px">
+            <div style="width:22px;background:${isThis ? 'var(--accent)' : 'var(--border2)'};border-radius:3px 3px 0 0;height:${Math.max(barH, w.count > 0 ? 4 : 0)}px;transition:.3s"></div>
+          </div>
+          <div class="tw-count" style="${isThis ? 'color:var(--accent)' : ''}">${w.count}</div>
+          <div class="tw-label">${label}${isThis ? ' ·now' : ''}</div>
+        </div>`;
+      }).join('')}
+    </div>
+  </div>`;
+
+  // By model
+  html += `<div class="ins-section">
+    <div class="ins-title">Replacements by Model</div>
+    ${modelRows.length ? `<table class="ins-table">
+      <thead><tr><th>Model</th><th>Replacements</th><th>Share</th></tr></thead>
+      <tbody>${modelRows.map(([model, cnt]) => `
+        <tr>
+          <td>${esc(model)}</td>
+          <td>${cnt}</td>
+          <td><div style="display:flex;align-items:center;gap:6px">
+            <div style="height:5px;border-radius:3px;background:var(--accent);width:${Math.round((cnt/totalRep)*100)}%;min-width:4px;max-width:120px"></div>
+            <span style="font-size:.68rem;color:var(--text3)">${totalRep > 0 ? Math.round((cnt/totalRep)*100) : 0}%</span>
+          </div></td>
+        </tr>`).join('')}
+      </tbody>
+    </table>` : `<div class="ins-empty">No data yet.</div>`}
+  </div>`;
+
+  // By location
+  html += `<div class="ins-section">
+    <div class="ins-title">Replacements by Location</div>
+    ${locRows.length ? `<table class="ins-table">
+      <thead><tr><th>Location</th><th>Replacements</th><th>Share</th></tr></thead>
+      <tbody>${locRows.map(([loc, cnt]) => `
+        <tr>
+          <td>${esc(loc)}</td>
+          <td>${cnt}</td>
+          <td><div style="display:flex;align-items:center;gap:6px">
+            <div style="height:5px;border-radius:3px;background:var(--yellow);width:${Math.round((cnt/totalRep)*100)}%;min-width:4px;max-width:120px"></div>
+            <span style="font-size:.68rem;color:var(--text3)">${totalRep > 0 ? Math.round((cnt/totalRep)*100) : 0}%</span>
+          </div></td>
+        </tr>`).join('')}
+      </tbody>
+    </table>` : `<div class="ins-empty">No data yet.</div>`}
+  </div>`;
+
+  // Most common activity / failure types
+  html += `<div class="ins-section">
+    <div class="ins-title">Most Common Activity Types</div>
+    ${actRows.length ? `<table class="ins-table">
+      <thead><tr><th>Activity Type</th><th>Count</th></tr></thead>
+      <tbody>${actRows.map(([type, cnt]) => `
+        <tr><td>${esc(type)}</td><td>${cnt}</td></tr>`).join('')}
+      </tbody>
+    </table>` : `<div class="ins-empty">No activity data yet.</div>`}
+  </div>`;
+
+  // Repeat failures
+  html += `<div class="ins-section">
+    <div class="ins-title">Repeat Failures</div>
+    ${repeats.length ? repeats.map(([serial, cnt]) => `
+      <div class="ins-repeat-row">
+        <div>
+          <div class="ins-repeat-serial">${esc(serial)}</div>
+          <div style="font-size:.66rem;color:var(--text3);font-family:var(--mono)">${esc(modelMap[serial] || 'Unknown model')}</div>
+        </div>
+        <span class="ins-repeat-count">${cnt}× replaced</span>
+      </div>`).join('') : `<div class="ins-empty">✅ No repeat failures detected.</div>`}
+  </div>`;
+
+  body.innerHTML = html;
+  _insightsLoaded = true;
+}
+
+function _insWeekKey(iso) {
+  const d = new Date(iso);
+  const day = d.getDay();
+  const monday = new Date(d);
+  monday.setDate(d.getDate() - ((day + 6) % 7));
+  return monday.toISOString().slice(0, 10);
+}
+
+function _insWeekShort(date) {
+  return new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
 // TEAM CHAT + PRESENCE
 // ══════════════════════════════════════════════
 let _chatOpen         = false;
