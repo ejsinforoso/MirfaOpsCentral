@@ -388,11 +388,110 @@ td.rmk{color:var(--text2);font-size:.74rem;max-width:180px;overflow:hidden;text-
 .b-st-sleep      {background:rgba(100,116,139,.12);color:#94a3b8;border:1px solid rgba(100,116,139,.3);font-weight:700}
 .b-st-done       {background:rgba(34,197,94,.12);color:#4ade80;border:1px solid rgba(34,197,94,.3);font-weight:700}
 
+/* TEAM CHAT */
+#chat-bubble{position:fixed;bottom:22px;right:22px;z-index:800;display:flex;flex-direction:column;align-items:flex-end;gap:10px}
+#chat-btn{width:50px;height:50px;border-radius:50%;background:var(--accent);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.22rem;box-shadow:0 4px 18px var(--aglow);transition:var(--t);flex-shrink:0}
+#chat-btn:hover{transform:scale(1.08);filter:brightness(1.12)}
+#chat-unread{position:absolute;top:-3px;right:-3px;background:var(--red);color:#fff;border-radius:8px;padding:1px 6px;font-size:.6rem;font-weight:700;font-family:var(--mono);border:2px solid var(--bg);min-width:18px;text-align:center;display:none}
+#chat-online-bubble{position:absolute;bottom:-4px;left:-4px;background:var(--green);color:#fff;border-radius:8px;padding:1px 5px;font-size:.58rem;font-weight:700;font-family:var(--mono);border:2px solid var(--bg);min-width:18px;text-align:center;display:none}
+#chat-panel{width:320px;height:480px;background:var(--surface);border:1px solid var(--border2);border-radius:12px;box-shadow:0 8px 40px rgba(0,0,0,.3);display:flex;flex-direction:column;overflow:hidden;animation:chat-in .18s ease;transform-origin:bottom right}
+@keyframes chat-in{from{transform:scale(.9);opacity:0}to{transform:scale(1);opacity:1}}
+#chat-header{padding:11px 14px;background:var(--surface2);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+#chat-title{font-family:var(--mono);font-size:.8rem;font-weight:700;color:var(--text);display:flex;align-items:center;gap:7px}
+#chat-live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);animation:pulse-dot 2s ease infinite}
+@keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:.4}}
+#chat-close{background:none;border:none;cursor:pointer;color:var(--text3);font-size:1rem;padding:2px 4px;border-radius:4px;transition:var(--t)}
+#chat-close:hover{color:var(--text)}
+/* PRESENCE STRIP */
+#chat-presence{padding:8px 12px;background:var(--surface2);border-bottom:1px solid var(--border);flex-shrink:0}
+#chat-presence-header{display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none}
+#chat-presence-title{font-size:.65rem;font-weight:700;color:var(--text3);font-family:var(--mono);text-transform:uppercase;letter-spacing:.07em;display:flex;align-items:center;gap:5px}
+#chat-presence-count{background:rgba(0,200,83,.15);color:var(--green);border:1px solid rgba(0,200,83,.25);border-radius:8px;padding:1px 6px;font-size:.6rem;font-weight:700;font-family:var(--mono)}
+#chat-presence-chevron{font-size:.6rem;color:var(--text3);transition:transform .18s ease}
+#chat-presence-chevron.open{transform:rotate(180deg)}
+#chat-avatars{display:flex;align-items:center;margin-top:6px;gap:-4px}
+.presence-av{width:24px;height:24px;border-radius:50%;background:var(--adim);border:2px solid var(--surface);display:flex;align-items:center;justify-content:center;font-size:.62rem;font-weight:700;color:var(--accent);font-family:var(--mono);margin-left:-6px;flex-shrink:0;cursor:default;transition:var(--t)}
+.presence-av:first-child{margin-left:0}
+.presence-av:hover{transform:translateY(-2px);z-index:1}
+.presence-av-overflow{background:var(--surface2);color:var(--text3);border:2px solid var(--border2)}
+#chat-presence-list{margin-top:8px;display:flex;flex-direction:column;gap:4px;max-height:140px;overflow-y:auto}
+#chat-presence-list::-webkit-scrollbar{width:2px}
+.presence-row{display:flex;align-items:center;gap:7px;padding:3px 0}
+.presence-dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 5px var(--green);flex-shrink:0}
+.presence-name{font-size:.75rem;color:var(--text);font-family:var(--mono);flex:1}
+.presence-shift{background:var(--adim);color:var(--accent);border:1px solid rgba(0,184,217,.2);border-radius:3px;padding:1px 5px;font-size:.6rem;font-family:var(--mono)}
+.presence-you{font-size:.6rem;color:var(--text3);font-family:var(--mono)}
+/* rest of chat */
+#chat-expiry-note{padding:4px 12px;font-size:.63rem;color:var(--text3);font-family:var(--mono);background:var(--surface2);border-bottom:1px solid var(--border);text-align:center;flex-shrink:0}
+#chat-messages{flex:1;overflow-y:auto;padding:10px 12px;display:flex;flex-direction:column;gap:8px;scroll-behavior:smooth}
+#chat-messages::-webkit-scrollbar{width:3px}
+#chat-messages::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+.chat-msg{display:flex;flex-direction:column;gap:2px;max-width:88%}
+.chat-msg.me{align-self:flex-end;align-items:flex-end}
+.chat-msg.them{align-self:flex-start;align-items:flex-start}
+.chat-bubble-wrap{display:flex;align-items:flex-end;gap:5px}
+.chat-msg.me .chat-bubble-wrap{flex-direction:row-reverse}
+.chat-avatar{width:22px;height:22px;border-radius:50%;background:var(--adim);border:1px solid rgba(0,184,217,.3);display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:700;color:var(--accent);font-family:var(--mono);flex-shrink:0}
+.chat-text{padding:7px 10px;border-radius:9px;font-size:.78rem;line-height:1.45;word-break:break-word;max-width:220px}
+.chat-msg.me .chat-text{background:var(--accent);color:#fff;border-bottom-right-radius:3px}
+.chat-msg.them .chat-text{background:var(--surface2);color:var(--text);border:1px solid var(--border);border-bottom-left-radius:3px}
+.chat-meta{font-size:.62rem;color:var(--text3);font-family:var(--mono);display:flex;gap:5px;align-items:center;padding:0 2px}
+.chat-shift-tag{background:var(--adim);color:var(--accent);border:1px solid rgba(0,184,217,.2);border-radius:3px;padding:1px 4px;font-size:.58rem;font-family:var(--mono)}
+.chat-date-sep{text-align:center;font-size:.62rem;color:var(--text3);font-family:var(--mono);padding:4px 0;display:flex;align-items:center;gap:6px}
+.chat-date-sep::before,.chat-date-sep::after{content:'';flex:1;height:1px;background:var(--border)}
+#chat-empty{flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px;color:var(--text3);font-size:.76rem;font-family:var(--mono)}
+#chat-empty span{font-size:1.6rem}
+#chat-footer{padding:10px 12px;border-top:1px solid var(--border);display:flex;gap:7px;align-items:flex-end;flex-shrink:0;background:var(--surface)}
+#chat-input{flex:1;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:7px 10px;color:var(--text);font-family:var(--mono);font-size:.78rem;outline:none;resize:none;max-height:80px;min-height:34px;line-height:1.4;transition:var(--t)}
+#chat-input:focus{border-color:var(--accent);box-shadow:0 0 0 2px var(--adim)}
+#chat-send{width:34px;height:34px;border-radius:8px;background:var(--accent);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0;transition:var(--t)}
+#chat-send:hover{filter:brightness(1.12);transform:translateY(-1px)}
+#chat-send:disabled{opacity:.45;cursor:not-allowed;transform:none}
+
 .hidden{display:none!important}
 </style>
 </head>
 <body>
 <div class="tc" id="TC"></div>
+
+<!-- TEAM CHAT BUBBLE -->
+<div id="chat-bubble" style="display:none">
+  <div id="chat-panel" class="hidden">
+    <div id="chat-header">
+      <div id="chat-title">
+        <div id="chat-live-dot"></div>
+        Team Chat
+      </div>
+      <button id="chat-close" onclick="toggleChat()" title="Close">✕</button>
+    </div>
+    <!-- PRESENCE STRIP -->
+    <div id="chat-presence">
+      <div id="chat-presence-header" onclick="togglePresenceList()">
+        <div id="chat-presence-title">
+          <span>🟢</span>
+          Online Now
+          <span id="chat-presence-count">0</span>
+        </div>
+        <span id="chat-presence-chevron">▼</span>
+      </div>
+      <div id="chat-avatars"></div>
+      <div id="chat-presence-list" class="hidden"></div>
+    </div>
+    <div id="chat-expiry-note">💬 Messages expire after 72 hours</div>
+    <div id="chat-messages"></div>
+    <div id="chat-footer">
+      <textarea id="chat-input" placeholder="Message the team…" rows="1"
+        onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat()}"
+        oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,80)+'px'"></textarea>
+      <button id="chat-send" onclick="sendChat()" title="Send">➤</button>
+    </div>
+  </div>
+  <div style="position:relative">
+    <button id="chat-btn" onclick="toggleChat()" title="Team Chat">💬</button>
+    <div id="chat-unread"></div>
+    <div id="chat-online-bubble"></div>
+  </div>
+</div>
 
 <!-- LOADING -->
 <div id="loading-overlay">
@@ -2036,7 +2135,17 @@ function stopActivitiesRealtime() {
   if (_activitiesChannel) { sb.removeChannel(_activitiesChannel); _activitiesChannel = null; }
 }
 
-function logout() { stopActivitiesRealtime(); clrS(); showScreen('auth'); }
+function logout() {
+  stopActivitiesRealtime();
+  if (_chatChannel) { sb.removeChannel(_chatChannel); _chatChannel = null; }
+  _chatInitialised = false;
+  _chatOpen = false;
+  _presenceUsers = {};
+  el('chat-bubble').style.display = 'none';
+  el('chat-panel').classList.add('hidden');
+  clrS();
+  showScreen('auth');
+}
 
 async function doForgotPassword() {
   const username = v('fp-u').trim();
@@ -2093,6 +2202,7 @@ function initApp() {
   applyTheme(_theme);
   if (u.role==='admin') refreshBell();
   startActivitiesRealtime();
+  initChat();
   go('homepage');
   // Show check-in overlay for operators (not admin)
   if (u.role !== 'admin') showCheckinOverlay();
@@ -5546,6 +5656,249 @@ async function exportReport() {
   XLSX.utils.book_append_sheet(wb, ws, 'Daily Report');
   XLSX.writeFile(wb, `MIRFA_DailyReport_${reportDate.toISOString().slice(0,10)}.xlsx`);
   toast('✅ Report exported!', 's');
+}
+
+// ══════════════════════════════════════════════
+// TEAM CHAT + PRESENCE
+// ══════════════════════════════════════════════
+let _chatOpen         = false;
+let _chatChannel      = null;
+let _chatUnread       = 0;
+let _chatInitialised  = false;
+let _presenceExpanded = false;
+let _presenceUsers    = {};           // key → { name, shift, isMe }
+const CHAT_EXPIRY_HOURS = 72;
+const MAX_VISIBLE_AVATARS = 5;
+
+function toggleChat() {
+  _chatOpen = !_chatOpen;
+  const panel = el('chat-panel');
+  if (_chatOpen) {
+    panel.classList.remove('hidden');
+    _chatUnread = 0;
+    el('chat-unread').style.display = 'none';
+    el('chat-unread').textContent = '';
+    setTimeout(() => { el('chat-input')?.focus(); scrollChatBottom(); }, 50);
+  } else {
+    panel.classList.add('hidden');
+  }
+}
+
+function togglePresenceList() {
+  _presenceExpanded = !_presenceExpanded;
+  el('chat-presence-list').classList.toggle('hidden', !_presenceExpanded);
+  el('chat-presence-chevron').classList.toggle('open', _presenceExpanded);
+}
+
+function scrollChatBottom(smooth = true) {
+  const box = el('chat-messages');
+  if (!box) return;
+  box.scrollTo({ top: box.scrollHeight, behavior: smooth ? 'smooth' : 'instant' });
+}
+
+function _chatTimeLabel(iso) {
+  const d = new Date(iso), now = new Date();
+  if ((now - d) / 36e5 < 24) return d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' ' +
+         d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+}
+
+function _chatDateSep(iso) {
+  const d = new Date(iso), today = new Date();
+  const yesterday = new Date(today); yesterday.setDate(today.getDate() - 1);
+  if (d.toDateString() === today.toDateString()) return 'Today';
+  if (d.toDateString() === yesterday.toDateString()) return 'Yesterday';
+  return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+}
+
+function _renderPresence() {
+  const users   = Object.values(_presenceUsers);
+  const count   = users.length;
+  const onlineBubble = el('chat-online-bubble');
+  const countEl      = el('chat-presence-count');
+  const avatarsEl    = el('chat-avatars');
+  const listEl       = el('chat-presence-list');
+
+  // Bubble on the chat button
+  if (onlineBubble) {
+    onlineBubble.textContent = count;
+    onlineBubble.style.display = count > 0 ? '' : 'none';
+  }
+  if (countEl) countEl.textContent = count;
+
+  // Stacked avatars (compact row)
+  if (avatarsEl) {
+    const visible  = users.slice(0, MAX_VISIBLE_AVATARS);
+    const overflow = count - MAX_VISIBLE_AVATARS;
+    avatarsEl.innerHTML = visible.map(u => {
+      const initials = u.name.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
+      return `<div class="presence-av" title="${esc(u.name)}${u.shift ? ' · ' + u.shift : ''}">${initials}</div>`;
+    }).join('') + (overflow > 0
+      ? `<div class="presence-av presence-av-overflow" title="${overflow} more online">+${overflow}</div>`
+      : '');
+  }
+
+  // Expandable full list
+  if (listEl) {
+    // Sort: me first, then alphabetical
+    const sorted = [...users].sort((a, b) => {
+      if (a.isMe && !b.isMe) return -1;
+      if (!a.isMe && b.isMe) return 1;
+      return a.name.localeCompare(b.name);
+    });
+    listEl.innerHTML = sorted.map(u => `
+      <div class="presence-row">
+        <div class="presence-dot"></div>
+        <span class="presence-name">${esc(u.name)}</span>
+        ${u.shift ? `<span class="presence-shift">${esc(u.shift)}</span>` : ''}
+        ${u.isMe ? `<span class="presence-you">you</span>` : ''}
+      </div>`).join('') || `<div style="font-size:.7rem;color:var(--text3);font-family:var(--mono);padding:2px 0">No one else online</div>`;
+  }
+}
+
+function _renderChatMessages(msgs) {
+  const box = el('chat-messages');
+  if (!box) return;
+  if (!msgs || msgs.length === 0) {
+    box.innerHTML = `<div id="chat-empty"><span>💬</span>No messages yet.<br>Say hi to the team!</div>`;
+    return;
+  }
+  let html = '', lastDate = '';
+  msgs.forEach(msg => {
+    const dateLabel = _chatDateSep(msg.created_at);
+    if (dateLabel !== lastDate) {
+      html += `<div class="chat-date-sep">${dateLabel}</div>`;
+      lastDate = dateLabel;
+    }
+    const isMe     = msg.sender_id === CU.id;
+    const initials = (msg.sender_name || '?').split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
+    const shiftTag = msg.shift ? `<span class="chat-shift-tag">${esc(msg.shift)}</span>` : '';
+    html += `
+      <div class="chat-msg ${isMe ? 'me' : 'them'}">
+        <div class="chat-bubble-wrap">
+          <div class="chat-avatar">${initials}</div>
+          <div class="chat-text">${esc(msg.message)}</div>
+        </div>
+        <div class="chat-meta">
+          ${!isMe ? `<span>${esc(msg.sender_name)}</span>` : ''}
+          ${shiftTag}
+          <span>${_chatTimeLabel(msg.created_at)}</span>
+        </div>
+      </div>`;
+  });
+  box.innerHTML = html;
+}
+
+async function initChat() {
+  if (_chatInitialised) return;
+  _chatInitialised = true;
+
+  el('chat-bubble').style.display = 'flex';
+
+  // Initial message load
+  const cutoff = new Date(Date.now() - CHAT_EXPIRY_HOURS * 36e5).toISOString();
+  const { data } = await sb.from('messages')
+    .select('id,sender_id,sender_name,shift,message,created_at')
+    .gte('created_at', cutoff)
+    .order('created_at', { ascending: true })
+    .limit(100);
+  _renderChatMessages(data || []);
+  scrollChatBottom(false);
+
+  if (_chatChannel) sb.removeChannel(_chatChannel);
+
+  _chatChannel = sb.channel('team-chat', {
+    config: { presence: { key: CU.id } }
+  })
+
+  // ── Presence events ──
+  .on('presence', { event: 'sync' }, () => {
+    const state = _chatChannel.presenceState();
+    _presenceUsers = {};
+    Object.entries(state).forEach(([key, presences]) => {
+      const p = presences[0];
+      if (p) _presenceUsers[key] = {
+        name:  p.name  || 'Unknown',
+        shift: p.shift || '',
+        isMe:  key === CU.id
+      };
+    });
+    _renderPresence();
+  })
+  .on('presence', { event: 'join' }, ({ key, newPresences }) => {
+    const p = newPresences[0];
+    if (p) _presenceUsers[key] = { name: p.name || 'Unknown', shift: p.shift || '', isMe: key === CU.id };
+    _renderPresence();
+  })
+  .on('presence', { event: 'leave' }, ({ key }) => {
+    delete _presenceUsers[key];
+    _renderPresence();
+  })
+
+  // ── New messages ──
+  .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, payload => {
+    const msg    = payload.new;
+    const box    = el('chat-messages');
+    const empty  = box?.querySelector('#chat-empty');
+    if (empty) box.innerHTML = '';
+
+    const isMe     = msg.sender_id === CU.id;
+    const initials = (msg.sender_name || '?').split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
+    const shiftTag = msg.shift ? `<span class="chat-shift-tag">${esc(msg.shift)}</span>` : '';
+    const div = document.createElement('div');
+    div.className = `chat-msg ${isMe ? 'me' : 'them'}`;
+    div.innerHTML = `
+      <div class="chat-bubble-wrap">
+        <div class="chat-avatar">${initials}</div>
+        <div class="chat-text">${esc(msg.message)}</div>
+      </div>
+      <div class="chat-meta">
+        ${!isMe ? `<span>${esc(msg.sender_name)}</span>` : ''}
+        ${shiftTag}
+        <span>${_chatTimeLabel(msg.created_at)}</span>
+      </div>`;
+    box?.appendChild(div);
+
+    if (!_chatOpen && !isMe) {
+      _chatUnread++;
+      const badge = el('chat-unread');
+      badge.style.display = '';
+      badge.textContent = _chatUnread > 9 ? '9+' : _chatUnread;
+    }
+    if (_chatOpen) scrollChatBottom();
+  })
+
+  .subscribe(async status => {
+    if (status === 'SUBSCRIBED') {
+      // Broadcast own presence
+      await _chatChannel.track({
+        name:  CU.first_name + ' ' + CU.last_name,
+        shift: CU.activeShift || CU.shift || ''
+      });
+    }
+  });
+}
+
+async function sendChat() {
+  const input = el('chat-input');
+  const msg = (input?.value || '').trim();
+  if (!msg) return;
+
+  const btn = el('chat-send');
+  btn.disabled = true;
+  input.value = '';
+  input.style.height = '34px';
+
+  const { error } = await sb.from('messages').insert({
+    sender_id:   CU.id,
+    sender_name: CU.first_name + ' ' + CU.last_name,
+    shift:       CU.activeShift || CU.shift || '',
+    message:     msg,
+    created_at:  now()
+  });
+
+  btn.disabled = false;
+  if (error) { toast('Failed to send message.', 'e'); input.value = msg; }
 }
 
 // ══════════════════════════════════════════════
