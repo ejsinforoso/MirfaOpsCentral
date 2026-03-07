@@ -596,7 +596,6 @@ td.rmk{color:var(--text2);font-size:.74rem;max-width:180px;overflow:hidden;text-
           <button class="ni-child" id="nav-home-child"  onclick="go('home')"><span class="nico">🏠</span>Home</button>
           <button class="ni-child" id="nav-activities"  onclick="go('activities')"><span class="nico">⚙️</span>Activities History</button>
           <button class="ni-child" id="nav-new"         onclick="go('new')"><span class="nico">🔄</span>Replacement History</button>
-          <button class="ni-child" id="nav-my"          onclick="go('my')"><span class="nico">📋</span>My History</button>
           <button class="ni-child" id="nav-serial"      onclick="go('serial')"><span class="nico">🔍</span>Serial Search</button>
           <button class="ni-child" id="nav-report"      onclick="go('report')"><span class="nico">📊</span>Daily Report</button>
           <button class="ni-child" id="nav-guide"       onclick="go('guide')"><span class="nico">📖</span>User Guide</button>
@@ -918,65 +917,6 @@ td.rmk{color:var(--text2);font-size:.74rem;max-width:180px;overflow:hidden;text-
         </div>
       </div>
 
-      <!-- ══ MY HISTORY ══ -->
-      <div id="page-my" class="hidden">
-        <div class="ph"><div class="pt">📋 My History</div><div class="ps" id="my-subtitle">All your recorded activities and replacements</div></div>
-
-        <!-- Summary cards -->
-        <div class="sg" id="my-stats" style="margin-bottom:14px"></div>
-
-        <!-- Tab bar -->
-        <div style="display:flex;gap:0;margin-bottom:14px;border-bottom:2px solid var(--border)">
-          <button class="atab active" id="my-tab-all"   onclick="myTab('all')"          style="flex:none;padding:8px 18px">All</button>
-          <button class="atab"        id="my-tab-act"   onclick="myTab('activities')"   style="flex:none;padding:8px 18px">⚙️ Activities</button>
-          <button class="atab"        id="my-tab-rep"   onclick="myTab('replacements')" style="flex:none;padding:8px 18px">🔄 Replacements</button>
-        </div>
-
-        <!-- Shared search + date filter -->
-        <div class="fbar" style="margin-bottom:12px">
-          <input class="fi" id="my-s" placeholder="Search…" oninput="_myPage=0;renderMy()"/>
-          <input class="fi" type="date" id="my-date" onchange="_myPage=0;renderMy()" style="max-width:160px"/>
-          <span id="my-filter-count" style="font-size:.78rem;font-weight:600;color:var(--accent);padding:5px 11px;background:var(--adim);border:1px solid rgba(0,184,217,.2);border-radius:var(--r);white-space:nowrap;display:none"></span>
-        </div>
-
-        <!-- All tab table -->
-        <div id="my-panel-all">
-          <div class="card">
-            <div class="tw"><table>
-              <thead><tr><th>#</th><th>Type</th><th>Detail</th><th>Serial / IP</th><th>Shift</th><th>Date / Time</th></tr></thead>
-              <tbody id="my-tbody-all"></tbody>
-            </table></div>
-            <div id="my-pagination-all" style="display:none;align-items:center;justify-content:space-between;padding:10px 16px;border-top:1px solid var(--border);font-size:.76rem;color:var(--text2)">
-              <span id="my-page-info-all"></span>
-              <div style="display:flex;gap:6px">
-                <button class="btn bs bsm" id="my-prev-all" onclick="myPageDir(-1)">← Prev</button>
-                <button class="btn bs bsm" id="my-next-all" onclick="myPageDir(1)">Next →</button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Activities tab table -->
-        <div id="my-panel-activities" class="hidden">
-          <div class="card">
-            <div class="tw"><table>
-              <thead><tr><th>#</th><th>Activity Type</th><th>IP / Serial</th><th>Diagnosis</th><th>Remarks</th><th>Shift</th><th>Date / Time</th></tr></thead>
-              <tbody id="my-tbody-act"></tbody>
-            </table></div>
-          </div>
-        </div>
-
-        <!-- Replacements tab table -->
-        <div id="my-panel-replacements" class="hidden">
-          <div class="card">
-            <div class="tw"><table>
-              <thead><tr><th>#</th><th>Type</th><th>New Serial</th><th>New Status</th><th>Old Serial</th><th>Old Status</th><th>Location</th><th>Remarks</th><th>Shift</th><th>Date / Time</th></tr></thead>
-              <tbody id="my-tbody-rep"></tbody>
-            </table></div>
-          </div>
-        </div>
-      </div>
-
       <!-- ══ SERIAL LOOKUP ══ -->
       <div id="page-serial" class="hidden">
         <div class="ph"><div class="pt">🔍 Serial Search</div><div class="ps">Search by full or partial serial number — miners and PSUs</div></div>
@@ -1221,12 +1161,12 @@ td.rmk{color:var(--text2);font-size:.74rem;max-width:180px;overflow:hidden;text-
 
         <!-- Guide nav tabs -->
         <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px">
-          <button class="btn bp bsm log-guide-tab-btn active" onclick="showLogGuideTab('record-movement')">📋 Record Material Movement</button>
+          <button class="btn bs bsm log-guide-tab-btn" onclick="showLogGuideTab('record-movement')">📋 Record Material Movement</button>
           <button class="btn bs bsm log-guide-tab-btn" onclick="showLogGuideTab('log-history')">📦 Logistics History</button>
         </div>
 
         <!-- ── Record Material Movement ── -->
-        <div class="log-guide-section" id="log-guide-record-movement">
+        <div class="log-guide-section hidden" id="log-guide-record-movement">
           <div class="card">
             <div class="ch"><div class="ct">📋 Record Material Movement</div></div>
             <div class="guide-body">
@@ -1275,7 +1215,7 @@ td.rmk{color:var(--text2);font-size:.74rem;max-width:180px;overflow:hidden;text-
 
         <!-- Guide nav tabs -->
         <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px" id="guide-tabs">
-          <button class="btn bp bsm guide-tab-btn active" onclick="showGuideTab('add-activity')">⚙️ Adding Activities</button>
+          <button class="btn bs bsm guide-tab-btn" onclick="showGuideTab('add-activity')">⚙️ Adding Activities</button>
           <button class="btn bs bsm guide-tab-btn" onclick="showGuideTab('replace-miner')">⛏️ Replacing Miners</button>
           <button class="btn bs bsm guide-tab-btn" onclick="showGuideTab('replace-psu')">🔋 Replacing PSUs</button>
           <button class="btn bs bsm guide-tab-btn" onclick="showGuideTab('equip-update')">🔧 Equipment Update</button>
@@ -1285,7 +1225,7 @@ td.rmk{color:var(--text2);font-size:.74rem;max-width:180px;overflow:hidden;text-
         </div>
 
         <!-- ── Adding Activities ── -->
-        <div class="guide-section" id="guide-add-activity">
+        <div class="guide-section hidden" id="guide-add-activity">
           <div class="card">
             <div class="ch"><div class="ct">⚙️ Adding Activities</div></div>
             <div class="guide-body">
@@ -1370,12 +1310,19 @@ td.rmk{color:var(--text2);font-size:.74rem;max-width:180px;overflow:hidden;text-
 
               <div class="guide-step"><span class="guide-num">1</span><div><strong>Open the form</strong> — Click <span class="guide-tag">🔧 Equipment Update</span> on the Submer Data Home page.</div></div>
               <div class="guide-step"><span class="guide-num">2</span><div><strong>Equipment Type</strong> — Select whether you are updating a <strong>Miner</strong> or a <strong>PSU</strong>.</div></div>
-              <div class="guide-step"><span class="guide-num">3</span><div><strong>Update Type — Miner</strong> — Choose the appropriate update:<br/>
-                <div style="margin-top:8px;display:flex;flex-direction:column;gap:5px">
+              <div class="guide-step"><span class="guide-num">3</span><div><strong>Update Type — Miner</strong> — First select the Miner Type: <strong>Antminer</strong> or <strong>Avalon</strong>.<br/>
+                <div style="margin-top:10px;margin-bottom:6px;font-size:.78rem;font-weight:700;color:var(--text2)">If Antminer:</div>
+                <div style="display:flex;flex-direction:column;gap:5px;margin-bottom:12px">
                   <span><span class="guide-tag">Consolidation</span> — Miner has been fully consolidated.</span>
                   <span><span class="guide-tag">Bad</span> — Miner confirmed as bad after assessment.</span>
                   <span><span class="guide-tag">Repaired</span> — Miner has come back from repair and is functional.</span>
                   <span><span class="guide-tag">Unrepairable</span> — Miner has been declared beyond repair.</span>
+                </div>
+                <div style="margin-bottom:6px;font-size:.78rem;font-weight:700;color:var(--text2)">If Avalon:</div>
+                <div style="display:flex;flex-direction:column;gap:5px">
+                  <span><span class="guide-tag">For Repair</span> — Miner is faulty and needs repair.</span>
+                  <span><span class="guide-tag">Repaired</span> — Miner has returned from repair.</span>
+                  <span><span class="guide-tag">In Repair</span> — Miner is currently being repaired.</span>
                 </div>
               </div></div>
               <div class="guide-step"><span class="guide-num">4</span><div><strong>Update Type — PSU</strong> — First select the PSU Type: <strong>Antminer</strong> or <strong>Avalon</strong>.<br/>
@@ -2450,8 +2397,8 @@ async function submitCheckin() {
 // ══════════════════════════════════════════════
 // NAVIGATION
 // ══════════════════════════════════════════════
-const PAGES = ['homepage','home','bitmain-home','new','my','serial','activities','report','db','db-miners','db-bt-miners','db-psus','users','miner-form','psu-form','guide','logistics','logistics-guide'];
-const CHILD_PAGES = ['activities','new','my','serial','report','guide'];
+const PAGES = ['homepage','home','bitmain-home','new','serial','activities','report','db','db-miners','db-bt-miners','db-psus','users','miner-form','psu-form','guide','logistics','logistics-guide'];
+const CHILD_PAGES = ['activities','new','serial','report','guide'];
 function go(page, sub) {
   el('ndrop')?.classList.add('hidden');
   PAGES.forEach(p => { el('page-'+p)?.classList.add('hidden'); el('nav-'+p)?.classList.remove('active'); });
@@ -2485,7 +2432,6 @@ function go(page, sub) {
   if (page==='home')          renderDash();
   if (page==='bitmain-home')  { const sh = CU.activeShift || CU.shift || ''; set('bt-dsub', 'Welcome back, ' + CU.first_name + (sh ? ' · ' + sh : '')); renderBtHomeFleet(); renderBtHydroBreakdown(); startBtDashAutoRefresh(); }
   if (page==='new')         renderRepHistory();
-  if (page==='my')          { _myPage=0; renderMy(); }
   if (page==='serial')      { set('sl-results',''); el('sl-input').value=''; }
   if (page==='activities')  renderActivities();
   if (page==='report')      renderReport();
@@ -3705,166 +3651,6 @@ async function renderDash() {
 }
 
 // ══════════════════════════════════════════════
-// MY HISTORY
-// ══════════════════════════════════════════════
-let _myTab  = 'all';
-let _myPage = 0;
-const MY_PAGE_SIZE = 100;
-
-function myTab(t) {
-  _myTab = t; _myPage = 0;
-  ['all','activities','replacements'].forEach(x => {
-    el(`my-tab-${x === 'all' ? 'all' : x === 'activities' ? 'act' : 'rep'}`)?.classList.toggle('active', x === t);
-    el(`my-panel-${x}`)?.classList.toggle('hidden', x !== t);
-  });
-  renderMy();
-}
-
-function myPageDir(dir) { _myPage = Math.max(0, _myPage + dir); renderMy(); }
-
-async function renderMy() {
-  const s    = v('my-s').trim();
-  const date = v('my-date');
-  const from = _myPage * MY_PAGE_SIZE;
-
-  // Load summary stats (always)
-  const [{ count: actCount }, { count: mrCount }, { count: prCount }] = await Promise.all([
-    sb.from('activities').select('*',{count:'exact',head:true}).eq('logged_by_id', CU.id),
-    sb.from('miner_replacements').select('*',{count:'exact',head:true}).eq('operator_id', CU.id),
-    sb.from('psu_replacements').select('*',{count:'exact',head:true}).eq('operator_id', CU.id),
-  ]);
-  set('my-stats', `
-    <div class="sc sca"><div class="sl">Activities Logged</div><div class="sv">${actCount||0}</div></div>
-    <div class="sc scg"><div class="sl">Miner Replacements</div><div class="sv">${mrCount||0}</div></div>
-    <div class="sc"><div class="sl">PSU Replacements</div><div class="sv">${prCount||0}</div></div>
-    <div class="sc sco"><div class="sl">Total Contributions</div><div class="sv">${(actCount||0)+(mrCount||0)+(prCount||0)}</div></div>
-  `);
-
-  // Filter count badge
-  const fc = el('my-filter-count');
-  const hasFilter = s || date;
-
-  if (_myTab === 'all' || _myTab === 'activities') await _renderMyAct(s, date, from, fc);
-  if (_myTab === 'all' || _myTab === 'replacements') await _renderMyRep(s, date, from, fc);
-  if (!hasFilter && fc) fc.style.display = 'none';
-}
-
-async function _renderMyAct(s, date, from, fc) {
-  const tbody = el('my-tbody-act') || el('my-tbody-all');
-  if (_myTab === 'activities') set('my-tbody-act', '<tr class="erow"><td colspan="7"><span>⏳</span>Loading…</td></tr>');
-  if (_myTab === 'all')        set('my-tbody-all', '<tr class="erow"><td colspan="6"><span>⏳</span>Loading…</td></tr>');
-
-  let qa = sb.from('activities')
-    .select('id,activity_type,ip,diagnosis,remarks,shift,created_at', {count:'exact'})
-    .eq('logged_by_id', CU.id)
-    .order('created_at', {ascending: false});
-  if (date) qa = qa.gte('created_at', date+'T00:00:00').lte('created_at', date+'T23:59:59');
-  if (s)    qa = qa.or(`ip.ilike.%${s}%,diagnosis.ilike.%${s}%,activity_type.ilike.%${s}%`);
-
-  let qm = sb.from('miner_replacements')
-    .select('new_serial,new_status,old_serial,old_status,location,remarks,shift,created_at', {count:'exact'})
-    .eq('operator_id', CU.id)
-    .order('created_at', {ascending: false});
-  let qp = sb.from('psu_replacements')
-    .select('new_serial,new_status,old_serial,old_status,location,remarks,shift,created_at', {count:'exact'})
-    .eq('operator_id', CU.id)
-    .order('created_at', {ascending: false});
-  if (date) { qm = qm.gte('created_at', date+'T00:00:00').lte('created_at', date+'T23:59:59');
-               qp = qp.gte('created_at', date+'T00:00:00').lte('created_at', date+'T23:59:59'); }
-  if (s)    { qm = qm.or(`new_serial.ilike.%${s}%,old_serial.ilike.%${s}%,location.ilike.%${s}%`);
-               qp = qp.or(`new_serial.ilike.%${s}%,old_serial.ilike.%${s}%,location.ilike.%${s}%`); }
-
-  if (_myTab === 'activities') {
-    const { data, count } = await qa.range(from, from + MY_PAGE_SIZE - 1);
-    const rows = data || [], total = count || 0;
-    if (fc && (s||date)) { fc.style.display=''; fc.textContent=`${total} result${total!==1?'s':''}`; }
-    set('my-tbody-act', rows.length ? rows.map((r,i) => `
-      <tr>
-        <td style="color:var(--text3)">${from+i+1}</td>
-        <td><span class="badge b-act" style="white-space:normal">${esc(r.activity_type)}</span></td>
-        <td class="hi" style="font-family:'Montserrat',sans-serif;font-size:.78rem">${esc(r.ip)||'—'}</td>
-        <td class="hi" style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(r.diagnosis)}">${esc(r.diagnosis)||'—'}</td>
-        <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(r.remarks)}">${esc(r.remarks)||'—'}</td>
-        <td>${shBadge(r.shift)}</td>
-        <td>${fmt(r.created_at)}</td>
-      </tr>`).join('') : `<tr class="erow"><td colspan="7"><span>⚙️</span>No activities found.</td></tr>`);
-    return;
-  }
-
-  if (_myTab === 'replacements') {
-    const [{ data: rm, count: mc }, { data: rp, count: pc }] = await Promise.all([
-      qm.range(from, from + MY_PAGE_SIZE - 1),
-      qp.range(from, from + MY_PAGE_SIZE - 1)
-    ]);
-    const rows = [
-      ...(rm||[]).map(r=>({...r,_t:'miner'})),
-      ...(rp||[]).map(r=>({...r,_t:'psu'}))
-    ].sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)).slice(0, MY_PAGE_SIZE);
-    const total = (mc||0)+(pc||0);
-    if (fc && (s||date)) { fc.style.display=''; fc.textContent=`${total} result${total!==1?'s':''}`; }
-    set('my-tbody-rep', rows.length ? rows.map((r,i) => `
-      <tr>
-        <td style="color:var(--text3)">${from+i+1}</td>
-        <td><span class="badge ${r._t==='miner'?'b-miner':'b-psu'}">${r._t==='miner'?'⛏️ Miner':'🔋 PSU'}</span></td>
-        <td><span class="serial-link" onclick="clickSerial('${esc(r.new_serial)}')">${esc(r.new_serial)}</span></td>
-        <td>${sBadge(r.new_status,r._t)}</td>
-        <td><span class="serial-link" onclick="clickSerial('${esc(r.old_serial)}')">${esc(r.old_serial)}</span></td>
-        <td>${sBadge(r.old_status,r._t)}</td>
-        <td class="hi">${esc(r.location)||'—'}</td>
-        <td class="rmk" title="${esc(r.remarks)}">${esc(r.remarks)||'—'}</td>
-        <td>${shBadge(r.shift)}</td>
-        <td>${fmt(r.created_at)}</td>
-      </tr>`).join('') : `<tr class="erow"><td colspan="10"><span>🔄</span>No replacements found.</td></tr>`);
-    return;
-  }
-
-  // ALL tab — merge activities + replacements, sort, paginate
-  const [{ data: acts }, { data: rm }, { data: rp }] = await Promise.all([
-    qa.range(0, 199), qm.range(0, 199), qp.range(0, 199)
-  ]);
-  const allRows = [
-    ...(acts||[]).map(r=>({
-      _src: 'activity', ts: r.created_at,
-      badge: `<span class="badge b-act" style="white-space:normal">${esc(r.activity_type)}</span>`,
-      detail: esc(r.diagnosis)||'—', serial: esc(r.ip)||'—', shift: r.shift
-    })),
-    ...(rm||[]).map(r=>({
-      _src: 'miner-rep', ts: r.created_at,
-      badge: `<span class="badge b-miner">⛏️ Miner Replacement</span>`,
-      detail: `${esc(r.new_serial)} → ${sBadge(r.new_status,'miner')}`, serial: esc(r.old_serial)||'—', shift: r.shift
-    })),
-    ...(rp||[]).map(r=>({
-      _src: 'psu-rep', ts: r.created_at,
-      badge: `<span class="badge b-psu">🔋 PSU Replacement</span>`,
-      detail: `${esc(r.new_serial)} → ${sBadge(r.new_status,'psu')}`, serial: esc(r.old_serial)||'—', shift: r.shift
-    }))
-  ].sort((a,b)=>new Date(b.ts)-new Date(a.ts));
-
-  const total = allRows.length;
-  const pageRows = allRows.slice(from, from + MY_PAGE_SIZE);
-  const totalPages = Math.ceil(total / MY_PAGE_SIZE);
-  if (fc && (s||date)) { fc.style.display=''; fc.textContent=`${total} result${total!==1?'s':''}`; }
-
-  const pg = el('my-pagination-all');
-  if (pg) {
-    pg.style.display = total > MY_PAGE_SIZE ? 'flex' : 'none';
-    set('my-page-info-all', `Page ${_myPage+1} of ${Math.max(1,totalPages)} · ${total} total`);
-    el('my-prev-all').disabled = _myPage === 0;
-    el('my-next-all').disabled = _myPage >= totalPages - 1;
-  }
-
-  set('my-tbody-all', pageRows.length ? pageRows.map((r,i)=>`
-    <tr>
-      <td style="color:var(--text3)">${from+i+1}</td>
-      <td>${r.badge}</td>
-      <td style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.detail}</td>
-      <td class="hi" style="font-family:'Montserrat',sans-serif;font-size:.78rem">${r.serial}</td>
-      <td>${shBadge(r.shift)}</td>
-      <td>${fmt(r.ts)}</td>
-    </tr>`).join('') : `<tr class="erow"><td colspan="6"><span>📋</span>No records found.</td></tr>`);
-}
-
-// ══════════════════════════════════════════════
 // STATUS DRILL-DOWN
 // ══════════════════════════════════════════════
 let _drillData = [];   // full unfiltered rows for current drill
@@ -4888,6 +4674,14 @@ function addEuRow() {
           <option value="avalon">Avalon</option>
         </select>
       </div>
+      <div class="fg" id="eu-miner-subtype-wrap-${idx}" style="display:none">
+        <label class="fl">Miner Type</label>
+        <select class="fs" id="eu-miner-subtype-${idx}" onchange="euMinerSubtypeChange(${idx})">
+          <option value="">Select…</option>
+          <option value="antminer">Antminer</option>
+          <option value="avalon">Avalon</option>
+        </select>
+      </div>
       <div class="fg" id="eu-type-wrap-${idx}" style="display:none">
         <label class="fl">Update Type</label>
         <select class="fs" id="eu-type-${idx}" onchange="euTypeChange(${idx})">
@@ -4925,8 +4719,8 @@ function addEuRow() {
 function euEquipChange(idx) {
   const equip = el(`eu-equip-${idx}`).value;
   // Reset all dependent fields
-  [`eu-psu-type-wrap-${idx}`,`eu-type-wrap-${idx}`,`eu-miner-type-wrap-${idx}`,
-   `eu-condition-wrap-${idx}`,`eu-miner-serial-wrap-${idx}`,`eu-serial-wrap-${idx}`]
+  [`eu-psu-type-wrap-${idx}`,`eu-miner-subtype-wrap-${idx}`,`eu-type-wrap-${idx}`,
+   `eu-miner-type-wrap-${idx}`,`eu-condition-wrap-${idx}`,`eu-miner-serial-wrap-${idx}`,`eu-serial-wrap-${idx}`]
     .forEach(id => el(id).style.display = 'none');
   el(`eu-type-${idx}`).innerHTML = '<option value="">Select…</option>';
   const fb = el(`eu-serial-feedback-${idx}`);
@@ -4935,13 +4729,33 @@ function euEquipChange(idx) {
   if (!equip) return;
 
   if (equip === 'miner') {
-    [['consolidation','Consolidation'],['repaired','Repaired'],['bad','Bad'],['unrepairable','Unrepairable']]
-      .forEach(([v,l]) => el(`eu-type-${idx}`).innerHTML += `<option value="${v}">${l}</option>`);
-    el(`eu-type-wrap-${idx}`).style.display = '';
+    // Show miner subtype selector first
+    el(`eu-miner-subtype-wrap-${idx}`).style.display = '';
   } else {
-    // PSU — show type selector first
+    // PSU — show PSU type selector first
     el(`eu-psu-type-wrap-${idx}`).style.display = '';
   }
+}
+
+function euMinerSubtypeChange(idx) {
+  const subtype = el(`eu-miner-subtype-${idx}`).value;
+  el(`eu-type-${idx}`).innerHTML = '<option value="">Select…</option>';
+  [`eu-type-wrap-${idx}`,`eu-miner-type-wrap-${idx}`,`eu-condition-wrap-${idx}`,`eu-serial-wrap-${idx}`]
+    .forEach(id => el(id).style.display = 'none');
+  const fb = el(`eu-serial-feedback-${idx}`);
+  if (fb) { fb.style.display = 'none'; fb.textContent = ''; }
+
+  if (!subtype) return;
+
+  if (subtype === 'antminer') {
+    [['consolidation','Consolidation'],['repaired','Repaired'],['bad','Bad'],['unrepairable','Unrepairable']]
+      .forEach(([v,l]) => el(`eu-type-${idx}`).innerHTML += `<option value="${v}">${l}</option>`);
+  } else {
+    // Avalon miner options
+    [['ava-for-repair','For Repair'],['ava-repaired','Repaired'],['ava-in-repair','In Repair']]
+      .forEach(([v,l]) => el(`eu-type-${idx}`).innerHTML += `<option value="${v}">${l}</option>`);
+  }
+  el(`eu-type-wrap-${idx}`).style.display = '';
 }
 
 function euPsuTypeChange(idx) {
@@ -4964,8 +4778,9 @@ function euPsuTypeChange(idx) {
 }
 
 function euTypeChange(idx) {
-  const equip = el(`eu-equip-${idx}`).value;
-  const type  = el(`eu-type-${idx}`).value;
+  const equip   = el(`eu-equip-${idx}`).value;
+  const type    = el(`eu-type-${idx}`).value;
+  const subtype = el(`eu-miner-subtype-${idx}`)?.value || '';
   el(`eu-miner-type-wrap-${idx}`).style.display    = 'none';
   el(`eu-condition-wrap-${idx}`).style.display     = 'none';
   el(`eu-miner-serial-wrap-${idx}`).style.display  = 'none';
@@ -4973,10 +4788,12 @@ function euTypeChange(idx) {
   const fb = el(`eu-serial-feedback-${idx}`);
   if (fb) { fb.style.display = 'none'; fb.textContent = ''; }
   if (!type) return;
-  if (equip === 'miner' && type === 'repaired')     el(`eu-miner-type-wrap-${idx}`).style.display = '';
-  if (equip === 'miner' && type === 'unrepairable') el(`eu-condition-wrap-${idx}`).style.display  = '';
-  if (equip === 'psu'   && type === 'operational')  el(`eu-miner-serial-wrap-${idx}`).style.display = '';
-  // Update serial label based on equipment
+  // Antminer-specific sub-fields
+  if (equip === 'miner' && subtype === 'antminer' && type === 'repaired')     el(`eu-miner-type-wrap-${idx}`).style.display = '';
+  if (equip === 'miner' && subtype === 'antminer' && type === 'unrepairable') el(`eu-condition-wrap-${idx}`).style.display  = '';
+  // PSU operational needs miner serial
+  if (equip === 'psu' && type === 'operational') el(`eu-miner-serial-wrap-${idx}`).style.display = '';
+  // Serial label
   const serialLabel = el(`eu-serial-wrap-${idx}`)?.querySelector('.fl');
   if (serialLabel) serialLabel.textContent = equip === 'psu' ? 'PSU Serial Number' : 'Serial Number';
   el(`eu-serial-wrap-${idx}`).style.display = '';
@@ -5026,19 +4843,21 @@ async function submitAllEquipUpdates() {
   // Validate all rows first
   const updates = [];
   rows.forEach(row => {
-    const idx       = row.id.replace('eu-row-','');
-    const equip     = el(`eu-equip-${idx}`)?.value || '';
-    const type      = el(`eu-type-${idx}`)?.value  || '';
-    const serial    = el(`eu-serial-${idx}`)?.value.trim() || '';
-    const psuType   = el(`eu-psu-type-${idx}`)?.value || '';
+    const idx         = row.id.replace('eu-row-','');
+    const equip       = el(`eu-equip-${idx}`)?.value || '';
+    const type        = el(`eu-type-${idx}`)?.value  || '';
+    const serial      = el(`eu-serial-${idx}`)?.value.trim() || '';
+    const psuType     = el(`eu-psu-type-${idx}`)?.value || '';
+    const minerSubtype= el(`eu-miner-subtype-${idx}`)?.value || '';
     const minerSerial = el(`eu-miner-serial-${idx}`)?.value.trim() || '';
     if (!equip || !type || !serial) { toast(`Update #${idx}: fill all fields.`, 'e'); hasError = true; return; }
+    if (equip === 'miner' && !minerSubtype) { toast(`Update #${idx}: select Miner Type (Antminer/Avalon).`, 'e'); hasError = true; return; }
     if (equip === 'psu' && !psuType) { toast(`Update #${idx}: select PSU Type.`, 'e'); hasError = true; return; }
     if (equip === 'psu' && type === 'operational' && !minerSerial) { toast(`Update #${idx}: enter the Miner Serial for this PSU.`, 'e'); hasError = true; return; }
     if (equip === 'miner' && type === 'repaired' && el(`eu-serial-${idx}`)?.dataset.mismatch === '1') {
       toast(`Update #${idx}: Check Miner Type! Serial doesn't match selected type.`, 'e'); hasError = true; return;
     }
-    updates.push({ idx, equip, type, serial, psuType, minerSerial });
+    updates.push({ idx, equip, type, serial, psuType, minerSubtype, minerSerial });
   });
   if (hasError) return;
 
@@ -5049,25 +4868,36 @@ async function submitAllEquipUpdates() {
     let newStatus = '', logDetail = '';
 
     if (equip === 'miner') {
-      if (type === 'consolidation') {
-        newStatus = 'XP - Consolidated';
-        logDetail = 'Equipment Update: Consolidation → XP - Consolidated';
-      } else if (type === 'repaired') {
-        const minerType = el(`eu-miner-type-${idx}`)?.value || 'antminer';
-        newStatus = minerType === 'antminer' ? 'Repaired - Antminer' : 'Repaired - Avalon';
-        logDetail = `Equipment Update: Repaired (${minerType === 'antminer' ? 'Antminer' : 'Avalon'}) → ${newStatus}`;
-      } else if (type === 'bad') {
-        newStatus = 'XP - Bad Miner';
-        logDetail = 'Equipment Update: Bad → XP - Bad Miner';
-      } else if (type === 'unrepairable') {
-        const condition = el(`eu-condition-${idx}`)?.value || 'Unrepairable';
-        const { data: existing } = await sb.from('miners').select('remarks').eq('serial', serial).single();
-        const existingRmk = existing?.remarks || '';
-        const remarks = existingRmk ? `${existingRmk} | ${condition}` : condition;
-        await sb.from('miners').update({ remarks, updated_by: op, updated_at: now() }).eq('serial', serial);
-        await dbLog(serial, 'Equipment Update', `Equipment Update: Unrepairable — marked as ${condition}`, op);
-        await sb.from('activities').insert({ ip: serial, activity_type: 'Equipment Update', diagnosis: `Unrepairable — marked as ${condition}`, remarks: '', tech: op, shift: CU.activeShift||CU.shift||'', logged_by: op, logged_by_id: CU.id, created_at: now() });
-        continue; // skip status update below
+      const { minerSubtype } = u;
+      if (minerSubtype === 'antminer') {
+        if (type === 'consolidation') {
+          newStatus = 'XP - Consolidated';
+          logDetail = 'Equipment Update: Consolidation → XP - Consolidated';
+        } else if (type === 'repaired') {
+          const minerType = el(`eu-miner-type-${idx}`)?.value || 'antminer';
+          newStatus = minerType === 'antminer' ? 'Repaired - Antminer' : 'Repaired - Avalon';
+          logDetail = `Equipment Update: Repaired (${minerType === 'antminer' ? 'Antminer' : 'Avalon'}) → ${newStatus}`;
+        } else if (type === 'bad') {
+          newStatus = 'XP - Bad Miner';
+          logDetail = 'Equipment Update: Bad → XP - Bad Miner';
+        } else if (type === 'unrepairable') {
+          const condition = el(`eu-condition-${idx}`)?.value || 'Unrepairable';
+          const { data: existing } = await sb.from('miners').select('remarks').eq('serial', serial).single();
+          const existingRmk = existing?.remarks || '';
+          const remarks = existingRmk ? `${existingRmk} | ${condition}` : condition;
+          await sb.from('miners').update({ remarks, updated_by: op, updated_at: now() }).eq('serial', serial);
+          await dbLog(serial, 'Equipment Update', `Equipment Update: Unrepairable — marked as ${condition}`, op);
+          await sb.from('activities').insert({ ip: serial, activity_type: 'Equipment Update', diagnosis: `Unrepairable — marked as ${condition}`, remarks: '', tech: op, shift: CU.activeShift||CU.shift||'', logged_by: op, logged_by_id: /^[0-9a-f-]{36}$/i.test(CU.id) ? CU.id : null, created_at: now() });
+          continue;
+        }
+      } else {
+        // Avalon miner
+        const avalonMinerMap = {
+          'ava-for-repair': ['AVA - For Repair',      'Equipment Update: Avalon → AVA - For Repair'],
+          'ava-repaired':   ['Repaired - Avalon',      'Equipment Update: Avalon → Repaired - Avalon'],
+          'ava-in-repair':  ['Under Repair - MadZ',    'Equipment Update: Avalon → Under Repair - MadZ'],
+        };
+        [newStatus, logDetail] = avalonMinerMap[type] || ['', ''];
       }
       await sb.from('miners').update({ status: newStatus, updated_by: op, updated_at: now() }).eq('serial', serial);
     } else {
